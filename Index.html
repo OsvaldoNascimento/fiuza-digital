@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fiuza Digital - Relatório Diário</title>
+    
+    <!-- Link para o CSS Externo -->
+    <link rel="stylesheet" href="style.css">
+
+    <!-- SDKs Compatíveis do Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+    
+    <!-- Bibliotecas pdfMake -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+</head>
+<body>
+
+<div class="container">
+    <div id="status-rede" class="status-bar online">Conectado - Sincronização Ativa</div>
+
+    <div class="header-logo">
+        <div class="logo-wrapper">
+            <!-- Logo Vetorizada Oficial do Grupo Fiuza Integrada -->
+            <svg viewBox="0 0 500 240" xmlns="http://www.w3.org/2000/svg" class="logo-fiuza-img">
+                <defs>
+                    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stop-color="#F2A900"/>
+                        <stop offset="50%" stop-color="#D98200"/>
+                        <stop offset="100%" stop-color="#995200"/>
+                    </linearGradient>
+                </defs>
+                
+                <!-- Selo Desde 1982 -->
+                <text x="80" y="32" font-family="'Segoe UI', Arial, sans-serif" font-size="28" font-style="italic" fill="#C77B00" text-anchor="middle">Desde</text>
+                <text x="80" y="65" font-family="'Impact', Arial, sans-serif" font-size="42" font-weight="bold" fill="#C77B00" text-anchor="middle">1982</text>
+                
+                <!-- Cubo 3D Dourado Fiuza -->
+                <g transform="translate(180, 5)">
+                    <!-- Faceta Superior -->
+                    <polygon points="50,5 90,25 50,45 10,25" fill="#FAD162" stroke="#B87300" stroke-width="2"/>
+                    <!-- Faceta Esquerda -->
+                    <polygon points="10,25 50,45 50,95 10,70" fill="url(#goldGrad)" stroke="#8A4A00" stroke-width="2"/>
+                    <!-- Faceta Direita -->
+                    <polygon points="50,45 90,25 90,70 50,95" fill="#B87300" stroke="#663700" stroke-width="2"/>
+                    <!-- Círculo Central -->
+                    <ellipse cx="50" cy="45" rx="14" ry="10" fill="#FFFFFF" opacity="0.85"/>
+                </g>
+                
+                <!-- Faixa Curva Laranja/Dourada -->
+                <path d="M 10 115 Q 230 85 490 115 L 485 125 Q 230 95 15 125 Z" fill="url(#goldGrad)"/>
+                
+                <!-- Texto GRUPO FIUZA -->
+                <text x="250" y="175" font-family="'Arial Black', Arial, sans-serif" font-size="52" font-weight="900" fill="#003366" text-anchor="middle" letter-spacing="2">GRUPO FIUZA</text>
+                
+                <!-- Slogan -->
+                <text x="250" y="210" font-family="'Segoe UI', Arial, sans-serif" font-size="22" font-weight="bold" fill="#003366" text-anchor="middle" letter-spacing="3">VOCÊ CONHECE, VOCÊ CONFIA</text>
+            </svg>
+        </div>
+        <h2>Fiuza Digital - Relatório Diário</h2>
+    </div>
+
+    <form id="rdo-form">
+        <div class="row">
+            <div class="form-group">
+                <label for="data">Data</label>
+                <input type="date" id="data" required>
+            </div>
+            <div class="form-group">
+                <label for="frente">Frente de Serviço</label>
+                <select id="frente" required>
+                    <option value="" disabled selected>Selecione...</option>
+                    <option value="Nucleação">Nucleação</option>
+                    <option value="Supressão">Supressão</option>
+                    <option value="Romaneio">Romaneio</option>
+                    <option value="Manutenção">Manutenção</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Encarregado -->
+        <div class="form-group">
+            <label for="encarregado">Encarregado</label>
+            <div class="input-with-actions">
+                <select id="encarregado" required>
+                    <!-- Opções dinâmicas -->
+                </select>
+                <button type="button" class="btn-mini btn-add" onclick="adicionarEncarregado()" title="Adicionar Novo">+</button>
+                <button type="button" class="btn-mini btn-del" onclick="removerEncarregado()" title="Remover Selecionado">-</button>
+            </div>
+        </div>
+
+        <!-- Seleção de Frota e Subcategoria Dinâmica -->
+        <div class="form-group">
+            <label>Frota / Categoria</label>
+            <div class="toggle-group">
+                <button type="button" id="btn-cat-equipamento" class="toggle-btn active" onclick="selecionarCategoriaFrota('equipamento')">Equipamento</button>
+                <button type="button" id="btn-cat-cb" class="toggle-btn" onclick="selecionarCategoriaFrota('cb')">CB</button>
+                <button type="button" id="btn-cat-pickup" class="toggle-btn" onclick="selecionarCategoriaFrota('pickup')">Pick-up</button>
+            </div>
+
+            <!-- Seleção do Tipo de Máquina/Veículo -->
+            <div style="margin-top: 10px;">
+                <label for="select-tipo-equipamento">Tipo / Família do Equipamento</label>
+                <select id="select-tipo-equipamento" onchange="alterarTipoEquipamento()" required>
+                    <!-- Opções dinâmicas de tipos -->
+                </select>
+            </div>
+            
+            <!-- Seleção da TAG Específica -->
+            <div style="margin-top: 10px;">
+                <label for="select-identificacao">Identificação (TAG)</label>
+                <div class="input-with-actions">
+                    <select id="select-identificacao" onchange="aoSelecionarTag()" required>
+                        <!-- Opções dinâmicas de TAGs -->
+                    </select>
+                    <button type="button" class="btn-mini btn-add" onclick="adicionarIdentificacao()" title="Adicionar TAG">+</button>
+                    <button type="button" class="btn-mini btn-del" onclick="removerIdentificacao()" title="Remover TAG">-</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Seleção Profissional (Operador | Motorista) -->
+        <div class="form-group">
+            <label>Profissional</label>
+            <div class="toggle-group">
+                <button type="button" id="btn-tipo-operador" class="toggle-btn active" onclick="selecionarTipoProfissional('operador')">Operador</button>
+                <button type="button" id="btn-tipo-motorista" class="toggle-btn" onclick="selecionarTipoProfissional('motorista')">Motorista</button>
+            </div>
+
+            <div class="input-with-actions">
+                <select id="select-profissional" required>
+                    <!-- Opções dinâmicas -->
+                </select>
+                <button type="button" class="btn-mini btn-add" onclick="adicionarProfissional()" title="Adicionar Novo">+</button>
+                <button type="button" class="btn-mini btn-del" onclick="removerProfissional()" title="Remover Selecionado">-</button>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="form-group">
+                <label for="horimetro_inicio">Horímetro Início</label>
+                <input type="number" step="0.1" id="horimetro_inicio" placeholder="0.0" readonly onclick="confirmarAlteracaoHorimetroInicio()" required>
+            </div>
+            <div class="form-group">
+                <label for="horimetro_fim">Horímetro Fim</label>
+                <input type="number" step="0.1" id="horimetro_fim" placeholder="0.0" required>
+            </div>
+        </div>
+
+        <div class="btn-container">
+            <button type="button" class="btn-acao btn-salvar" onclick="salvarRelatorio()">Salvar Relatório</button>
+            <button type="button" class="btn-acao btn-pdf" onclick="gerarPDF()">PDF Fiuza</button>
+        </div>
+    </form>
+</div>
+
+<script>
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('./service-worker.js')
+                .then(reg => console.log('Service Worker registrado!'))
+                .catch(err => console.log('Falha ao registrar Service Worker: ', err));
+        });
+    }
+
+    const padraoEquipamentos = [
+        {
+            tipo: "TRATOR DE ESTEIRA",
+            tags: ["SH_430", "SH_445", "SH_449", "SH_565", "SH_567", "SH_569", "SH_847", "SH_886"]
+        },
+        {
+            tipo: "PÁ CARREGADEIRA",
+            tags: ["SH_168", "SH_461", "SH_10299", "SH_10389", "SH_10390", "SH_10781", "SH_10782"]
+        },
+        {
+            tipo: "ESCAVADEIRA HIDRÁULICA",
+            tags: ["SH_400", "SH_403", "SH_435", "SH_443", "SH_471"]
+        },
+        {
+            tipo: "GARRA TRAÇADORA",
+            tags: ["SH_462", "SH_463", "SH_464", "SH_10774", "SH_10777"]
+        },
+        {
+            tipo: "MOTONIVELADORA",
+            tags: ["SH_451", "SH_460"]
+        }
+    ];
+
+    const padraoCB = [
+        {
+            tipo: "CAMINHÃO BASCULANTE",
+            tags: [
+                "SH_234", "SH_235", "SH_236", "SH_237", "SH_252", "SH_262", 
+                "SH_272", "SH_273", "SH_274", "SH_275", "SH_307", "SH_10740", 
+                "SH_10741", "SH_10742", "SH_10743", "SH_10744", "SH_10745", 
+                "SH_10746", "SH_10747", "SH_10748", "SH_10749"
+            ]
+        },
+        { tipo: "CAMINHÃO MADEIREIRO", tags: ["SH_212"] },
+        { tipo: "CAMINHÃO PIPA", tags: ["SH_220", "SH_222", "SH_231"] },
+        { tipo: "CAMINHÃO COMBOIO", tags: ["SH_243", "SH_10575"] },
+        { tipo: "CAMINHÃO OFICINA", tags: ["SH_269"] },
+        { tipo: "CAMINHÃO PRANCHA", tags: ["SH_305", "SH_311"] },
+        { tipo: "ÔNIBUS", tags: ["SH_10719", "SH_10787"] }
+    ];
+
+    const padraoPickup = [
+        { tipo: "CAMINHONETE / PICK-UP", tags: ["SH_10699", "SH_10717", "SH_10718", "SH_10765"] }
+    ];
+
+    const padraoMotoristas = [
+        "CARLOS ANTONIO PINHEIRO DO NASCIMENTO", "CLEITON ALVES DE OLIVEIRA", "EMILSON MARTINS MOREIRA",
+        "ERNANDES RODRIGUES COSTA", "EVANDO FRANCISCO RODRIGUES COSTA", "FRANCISCO ADRIANO DA SILVEIRA LIMA",
+        "FRANCISCO DE ASSIS LOPES RIBEIRO", "GILBERTO PORTELA DE ARAUJO", "JHONATAN OLIVEIRA BEZERRA",
+        "JIMMY LEAL LOPES", "JOSE MARCOS DUARTE SILVA", "JOSE ROBERTO BAENA BARBOSA", "MANOEL MOURA DA SILVA",
+        "MARCELO ANTONIO MOURA GALVAO", "OBEDE MELO DA SILVA", "ORDERLEI ALVES GONÇALVES",
+        "RAIMUNDO NONATO LIMA MESQUITA", "REINALDO GONÇALVES FERREIRA", "SALES ALVES MARIM",
+        "FRANCISCO NUNES DE MORAIS", "ELISVALDO SARGES RODRIGUES", "ZULRIARLLS GONÇALVES"
+    ];
+
+    const padraoMotoristasPickup = [
+        "ADELSON DE OLIVEIRA ARAUJO",
+        "ALEX TAVARES",
+        "MILTON PINA C.",
+        "OSVALDO NASCIMENTO",
+        "VICENTE AIRES R."
+    ];
+
+    const padraoEncarregados = ["MILTON PINA C.", "OSVALDO NASCIMENTO", "VICENTE AIRES R."];
+
+    const padraoOperadores = [
+        "ROSÁRIO MOREIRA DA COSTA", "AGNALDO LEANDRO DA SILVA", "ANTONIO JOSE DA SILVA",
+        "DANIEL SANTOS ABREU SOUSA", "EDINALDO DE SOUSA SILVA", "ELIOMAR FERREIRA DE ASSUNCAO",
+        "ROBERTO ALVES DA SILVA", "TAMIRES DE SOUSA MARQUES", "VALDO MONTEIRO CORREA",
+        "DHOW ALBERTH PINHEIRO RAMOS", "ADRIANO BRITO MOREIRA", "ALDOLINO EVANGELISTA DE SOUZA",
+        "JOSE DE RIBAMAR LIMA", "JOSE FERNANDO DE OLIVEIRA BARBOSA", "JOSE GENTIL LIMA",
+        "VALDEMIR FERREIRA DE BRITO", "ANTONIO MARCOS SANTOS ARAUJO"
+    ];
+
+    let listaEquipamentos = JSON.parse(localStorage.getItem('fiuza_equipamentos_v3')) || padraoEquipamentos;
+    let listaCB = JSON.parse(localStorage.getItem('fiuza_cb_v3')) || padraoCB;
+    let listaPickup = JSON.parse(localStorage.getItem('fiuza_pickup_v3')) || padraoPickup;
+
+    let listaMotoristas = JSON.parse(localStorage.getItem('fiuza_motoristas')) || padraoMotoristas;
+    let listaMotoristasPickup = JSON.parse(localStorage.getItem('fiuza_motoristas_pickup')) || padraoMotoristasPickup;
+    let listaEncarregados = JSON.parse(localStorage.getItem('fiuza_encarregados_v2')) || padraoEncarregados;
+    let listaOperadores = JSON.parse(localStorage.getItem('fiuza_operadores')) || padraoOperadores;
+
+    let categoriaFrotaAtual = 'equipamento';
+    let tipoProfissionalAtual = 'operador';
+    let horimetroPermitidoEdicao = false;
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyBs9tGAhk2dRWKHsyCujHqywe08Z...",
+        authDomain: "fiuza-digital.firebaseapp.com",
+        projectId: "fiuza-digital",
+        storageBucket: "fiuza-digital.appspot.com",
+        messagingSenderId: "1061198364805",
+        appId: "1:1061198364805:web:98924dbc63a61b...",
+        measurementId: "G-X1JGTE3D4G"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+    db.enablePersistence().catch(() => {});
+
+    const statusBar = document.getElementById('status-rede');
+    window.addEventListener('online', () => {
+        statusBar.className = "status-bar online";
+        statusBar.innerText = "Conectado - Sincronização Ativa";
+    });
+    window.addEventListener('offline', () => {
+        statusBar.className = "status-bar offline";
+        statusBar.innerText = "Modo Offline - Dados salvos localmente";
+    });
+
+    document.getElementById('data').valueAsDate = new Date();
+
+    function renderizarEncarregados() {
+        const select = document.getElementById('encarregado');
+        select.innerHTML = '<option value="" disabled selected>Selecione...</option>';
+        listaEncarregados.forEach(nome => {
+            select.innerHTML += `<option value="${nome}">${nome}</option>`;
+        });
+    }
+
+    function renderizarTiposEquipamento() {
+        const selectTipo = document.getElementById('select-tipo-equipamento');
+        selectTipo.innerHTML = '<option value="" disabled selected>Selecione o Tipo...</option>';
+
+        let lista = categoriaFrotaAtual === 'equipamento' ? listaEquipamentos : (categoriaFrotaAtual === 'cb' ? listaCB : listaPickup);
+
+        lista.forEach((item, idx) => {
+            selectTipo.innerHTML += `<option value="${idx}">${item.tipo}</option>`;
+        });
+
+        if (lista.length > 0) {
+            selectTipo.value = "0";
+            renderizarTagsPorTipo();
+        }
+    }
+
+    function alterarTipoEquipamento() {
+        renderizarTagsPorTipo();
+    }
+
+    function renderizarTagsPorTipo() {
+        const selectTipo = document.getElementById('select-tipo-equipamento');
+        const selectTag = document.getElementById('select-identificacao');
+        selectTag.innerHTML = '<option value="" disabled selected>Selecione a TAG...</option>';
+
+        const idxTipo = parseInt(selectTipo.value);
+        let lista = categoriaFrotaAtual === 'equipamento' ? listaEquipamentos : (categoriaFrotaAtual === 'cb' ? listaCB : listaPickup);
+
+        if (!isNaN(idxTipo) && lista[idxTipo]) {
+            lista[idxTipo].tags.forEach(tag => {
+                selectTag.innerHTML += `<option value="${tag}">${tag}</option>`;
+            });
+        }
+    }
+
+    function renderizarProfissionais() {
+        const select = document.getElementById('select-profissional');
+        select.innerHTML = '<option value="" disabled selected>Selecione...</option>';
+        
+        let lista = [];
+        if (tipoProfissionalAtual === 'operador') {
+            lista = listaOperadores;
+        } else if (categoriaFrotaAtual === 'pickup') {
+            lista = listaMotoristasPickup;
+        } else {
+            lista = listaMotoristas;
+        }
+
+        lista.forEach(nome => {
+            select.innerHTML += `<option value="${nome}">${nome}</option>`;
+        });
+    }
+
+    function selecionarCategoriaFrota(cat) {
+        categoriaFrotaAtual = cat;
+        document.getElementById('btn-cat-equipamento').classList.toggle('active', cat === 'equipamento');
+        document.getElementById('btn-cat-cb').classList.toggle('active', cat === 'cb');
+        document.getElementById('btn-cat-pickup').classList.toggle('active', cat === 'pickup');
+        
+        renderizarTiposEquipamento();
+
+        if (cat === 'equipamento') {
+            selecionarTipoProfissional('operador');
+        } else {
+            selecionarTipoProfissional('motorista');
+        }
+    }
+
+    function selecionarTipoProfissional(tipo) {
+        tipoProfissionalAtual = tipo;
+        document.getElementById('btn-tipo-operador').classList.toggle('active', tipo === 'operador');
+        document.getElementById('btn-tipo-motorista').classList.toggle('active', tipo === 'motorista');
+        renderizarProfissionais();
+    }
+
+    function aoSelecionarTag() {
+        const tagSelecionada = document.getElementById('select-identificacao').value;
+        const inputHini = document.getElementById('horimetro_inicio');
+        
+        if (!tagSelecionada) return;
+
+        db.collection("relatorios")
+            .where("identificacao_tag", "==", tagSelecionada)
+            .orderBy("criadoEm", "desc")
+            .limit(1)
+            .get()
+            .then((querySnapshot) => {
+                if (!querySnapshot.empty) {
+                    const ultimoRelatorio = querySnapshot.docs[0].data();
+                    if (ultimoRelatorio.horimetro_fim !== undefined) {
+                        inputHini.value = ultimoRelatorio.horimetro_fim;
+                        localStorage.setItem(`fiuza_ultimo_hfim_${tagSelecionada}`, ultimoRelatorio.horimetro_fim);
+                        return;
+                    }
+                }
+                
+                const ultimoLocal = localStorage.getItem(`fiuza_ultimo_hfim_${tagSelecionada}`);
+                if (ultimoLocal) {
+                    inputHini.value = ultimoLocal;
+                } else {
+                    inputHini.value = "0.0";
+                }
+            })
+            .catch(() => {
+                const ultimoLocal = localStorage.getItem(`fiuza_ultimo_hfim_${tagSelecionada}`);
+                inputHini.value = ultimoLocal || "0.0";
+            });
+
+        inputHini.readOnly = true;
+        horimetroPermitidoEdicao = false;
+    }
+
+    function confirmarAlteracaoHorimetroInicio() {
+        const inputHini = document.getElementById('horimetro_inicio');
+        
+        if (horimetroPermitidoEdicao) return;
+
+        const resposta = confirm("Você quer alterar o horímetro inicial do equipamento?");
+        
+        if (resposta) {
+            horimetroPermitidoEdicao = true;
+            inputHini.readOnly = false;
+            inputHini.focus();
+        } else {
+            inputHini.blur();
+        }
+    }
+
+    function adicionarEncarregado() {
+        const novo = prompt("Digite o nome do novo Encarregado:");
+        if (novo && novo.trim() !== '') {
+            const valor = novo.trim().toUpperCase();
+            listaEncarregados.push(valor);
+            listaEncarregados.sort();
+            localStorage.setItem('fiuza_encarregados_v2', JSON.stringify(listaEncarregados));
+            renderizarEncarregados();
+            document.getElementById('encarregado').value = valor;
+        }
+    }
+
+    function removerEncarregado() {
+        const select = document.getElementById('encarregado');
+        const selecionado = select.value;
+        if (!selecionado) return alert('Selecione um encarregado para remover!');
+
+        if (confirm(`Deseja remover "${selecionado}" da lista?`)) {
+            listaEncarregados = listaEncarregados.filter(nome => nome !== selecionado);
+            localStorage.setItem('fiuza_encarregados_v2', JSON.stringify(listaEncarregados));
+            renderizarEncarregados();
+        }
+    }
+
+    function adicionarIdentificacao() {
+        let lista = categoriaFrotaAtual === 'equipamento' ? listaEquipamentos : (categoriaFrotaAtual === 'cb' ? listaCB : listaPickup);
+        const selectTipo = document.getElementById('select-tipo-equipamento');
+        let idxTipo = parseInt(selectTipo.value);
+
+        if (isNaN(idxTipo)) {
+            let tiposTexto = lista.map((item, idx) => `${idx + 1} - ${item.tipo}`).join('\n');
+            let escolha = prompt(`Escolha o Tipo de Equipamento:\n\n${tiposTexto}`);
+            idxTipo = parseInt(escolha) - 1;
+        }
+
+        if (isNaN(idxTipo) || !lista[idxTipo]) {
+            return alert("Tipo de equipamento inválido!");
+        }
+
+        const tipoNome = lista[idxTipo].tipo;
+        const novaTag = prompt(`Digite a nova TAG para ${tipoNome} (Ex: SH_100):`);
+
+        if (novaTag && novaTag.trim() !== '') {
+            let tagFormatada = novaTag.trim().toUpperCase();
+            if (!tagFormatada.startsWith('SH_')) {
+                tagFormatada = 'SH_' + tagFormatada;
+            }
+
+            lista[idxTipo].tags.push(tagFormatada);
+
+            if (categoriaFrotaAtual === 'equipamento') {
+                localStorage.setItem('fiuza_equipamentos_v3', JSON.stringify(listaEquipamentos));
+            } else if (categoriaFrotaAtual === 'cb') {
+                localStorage.setItem('fiuza_cb_v3', JSON.stringify(listaCB));
+            } else {
+                localStorage.setItem('fiuza_pickup_v3', JSON.stringify(listaPickup));
+            }
+
+            selectTipo.value = idxTipo.toString();
+            renderizarTagsPorTipo();
+            document.getElementById('select-identificacao').value = tagFormatada;
+            aoSelecionarTag();
+        }
+    }
+
+    function removerIdentificacao() {
+        const selectTag = document.getElementById('select-identificacao');
+        const tagSelecionada = selectTag.value;
+
+        if (!tagSelecionada) return alert('Selecione uma TAG para remover!');
+
+        const selectTipo = document.getElementById('select-tipo-equipamento');
+        const idxTipo = parseInt(selectTipo.value);
+        let lista = categoriaFrotaAtual === 'equipamento' ? listaEquipamentos : (categoriaFrotaAtual === 'cb' ? listaCB : listaPickup);
+
+        if (confirm(`Deseja remover a TAG "${tagSelecionada}"?`)) {
+            lista[idxTipo].tags = lista[idxTipo].tags.filter(t => t !== tagSelecionada);
+
+            if (categoriaFrotaAtual === 'equipamento') {
+                localStorage.setItem('fiuza_equipamentos_v3', JSON.stringify(listaEquipamentos));
+            } else if (categoriaFrotaAtual === 'cb') {
+                localStorage.setItem('fiuza_cb_v3', JSON.stringify(listaCB));
+            } else {
+                localStorage.setItem('fiuza_pickup_v3', JSON.stringify(listaPickup));
+            }
+
+            renderizarTagsPorTipo();
+        }
+    }
+
+    function adicionarProfissional() {
+        const tipoNome = tipoProfissionalAtual === 'operador' ? 'Operador' : 'Motorista';
+        const novo = prompt(`Digite o nome do novo ${tipoNome}:`);
+        if (novo && novo.trim() !== '') {
+            const valor = novo.trim().toUpperCase();
+            if (tipoProfissionalAtual === 'operador') {
+                listaOperadores.push(valor);
+                listaOperadores.sort();
+                localStorage.setItem('fiuza_operadores', JSON.stringify(listaOperadores));
+            } else if (categoriaFrotaAtual === 'pickup') {
+                listaMotoristasPickup.push(valor);
+                listaMotoristasPickup.sort();
+                localStorage.setItem('fiuza_motoristas_pickup', JSON.stringify(listaMotoristasPickup));
+            } else {
+                listaMotoristas.push(valor);
+                listaMotoristas.sort();
+                localStorage.setItem('fiuza_motoristas', JSON.stringify(listaMotoristas));
+            }
+            renderizarProfissionais();
+            document.getElementById('select-profissional').value = valor;
+        }
+    }
+
+    function removerProfissional() {
+        const select = document.getElementById('select-profissional');
+        const selecionado = select.value;
+        if (!selecionado) return alert('Selecione um nome para remover!');
+
+        if (confirm(`Deseja remover "${selecionado}" da lista?`)) {
+            if (tipoProfissionalAtual === 'operador') {
+                listaOperadores = listaOperadores.filter(nome => nome !== selecionado);
+                localStorage.setItem('fiuza_operadores', JSON.stringify(listaOperadores));
+            } else if (categoriaFrotaAtual === 'pickup') {
+                listaMotoristasPickup = listaMotoristasPickup.filter(nome => nome !== selecionado);
+                localStorage.setItem('fiuza_motoristas_pickup', JSON.stringify(listaMotoristasPickup));
+            } else {
+                listaMotoristas = listaMotoristas.filter(nome => nome !== selecionado);
+                localStorage.setItem('fiuza_motoristas', JSON.stringify(listaMotoristas));
+            }
+            renderizarProfissionais();
+        }
+    }
+
+    renderizarEncarregados();
+    renderizarTiposEquipamento();
+    renderizarProfissionais();
+
+    function salvarRelatorio() {
+        const frente = document.getElementById('frente').value;
+        const encarregado = document.getElementById('encarregado').value;
+        const profissional = document.getElementById('select-profissional').value;
+        const identificacao = document.getElementById('select-identificacao').value;
+        const hFimVal = parseFloat(document.getElementById('horimetro_fim').value) || 0;
+
+        const dados = {
+            data: document.getElementById('data').value,
+            frente: frente,
+            encarregado: encarregado,
+            categoria_frota: categoriaFrotaAtual,
+            identificacao_tag: identificacao,
+            funcao_profissional: tipoProfissionalAtual,
+            nome_profissional: profissional,
+            horimetro_inicio: parseFloat(document.getElementById('horimetro_inicio').value) || 0,
+            horimetro_fim: hFimVal,
+            criadoEm: firebase.firestore.FieldValue.serverTimestamp()
+        };
+
+        if(!frente || !encarregado || !identificacao || !profissional) {
+            alert('Por favor, preencha todos os campos!');
+            return;
+        }
+
+        db.collection("relatorios").add(dados)
+        .then(() => {
+            localStorage.setItem(`fiuza_ultimo_hfim_${identificacao}`, hFimVal);
+            alert('✓ Relatório salvo com sucesso!');
+        })
+        .catch((error) => {
+            alert("Erro ao salvar: " + error.message);
+        });
+    }
+
+    function gerarPDF() {
+        const data = document.getElementById('data').value;
+        const frente = document.getElementById('frente').value;
+        const encarregado = document.getElementById('encarregado').value;
+        const profissional = document.getElementById('select-profissional').value;
+        const identificacao = document.getElementById('select-identificacao').value;
+        const hini = parseFloat(document.getElementById('horimetro_inicio').value) || 0;
+        const hfim = parseFloat(document.getElementById('horimetro_fim').value) || 0;
+
+        if(!frente || !encarregado || !identificacao || !profissional) {
+            alert('Por favor, preencha os dados do relatório antes de gerar o PDF!');
+            return;
+        }
+
+        const dataFormatada = data.split('-').reverse().join('/');
+        const hTotal = (hfim - hini).toFixed(1);
+
+        const docDefinition = {
+            pageSize: 'A4',
+            pageMargins: [40, 40, 40, 40],
+            content: [
+                {
+                    columns: [
+                        {
+                            text: 'GRUPO FIUZA',
+                            fontSize: 18,
+                            bold: true,
+                            color: '#003366'
+                        },
+                        {
+                            text: 'RELATÓRIO DIÁRIO DE OPERAÇÃO (RDO)',
+                            alignment: 'right',
+                            fontSize: 10,
+                            color: '#666666',
+                            margin: [0, 5, 0, 0]
+                        }
+                    ]
+                },
+                {
+                    canvas: [{ type: 'line', x1: 0, y1: 10, x2: 515, y2: 10, lineWidth: 3, lineColor: '#FF6600' }]
+                },
+                { text: ' ', margin: [0, 10] },
+                {
+                    table: {
+                        widths: ['50%', '50%'],
+                        body: [
+                            [
+                                { text: `Data: ${dataFormatada}`, fillColor: '#f9f9f9', padding: 8 },
+                                { text: `Frente de Serviço: ${frente}`, fillColor: '#f9f9f9', padding: 8 }
+                            ],
+                            [
+                                { text: `Encarregado: ${encarregado}`, colSpan: 2, padding: 8 },
+                                {}
+                            ],
+                            [
+                                { text: `TAG / Frota: ${identificacao}`, fillColor: '#f9f9f9', padding: 8 },
+                                { text: `Função: ${tipoProfissionalAtual.toUpperCase()}`, fillColor: '#f9f9f9', padding: 8 }
+                            ],
+                            [
+                                { text: `Nome: ${profissional}`, colSpan: 2, padding: 8 },
+                                {}
+                            ],
+                            [
+                                { text: `Horímetro Inicial: ${hini}`, fillColor: '#f9f9f9', padding: 8 },
+                                { text: `Horímetro Final: ${hfim}`, fillColor: '#f9f9f9', padding: 8 }
+                            ],
+                            [
+                                { text: `Total de Horas Trabalhadas: ${hTotal} hrs`, colSpan: 2, fillColor: '#eef2f5', bold: true, color: '#003366', padding: 10 },
+                                {}
+                            ]
+                        ]
+                    }
+                }
+            ]
+        };
+
+        pdfMake.createPdf(docDefinition).download(`RDO_${identificacao}_${data}.pdf`);
+    }
+</script>
+
+</body>
+</html>

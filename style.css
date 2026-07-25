@@ -1,0 +1,188 @@
+:root {
+    --azul-fiuza: #003366;
+    --laranja-fiuza: #FF6600;
+    --fundo: #F4F6F8;
+    --texto: #333333;
+    --vermelho-erro: #dc3545;
+    --verde-sucesso: #28a745;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background-color: var(--fundo);
+    color: var(--texto);
+    padding: 15px;
+}
+
+.container {
+    max-width: 600px;
+    width: 100%;
+    margin: 0 auto;
+    background: #ffffff;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.header-logo {
+    text-align: center;
+    margin-bottom: 20px;
+    padding: 10px;
+    border-bottom: 3px solid var(--laranja-fiuza);
+    background-color: #ffffff;
+}
+
+.logo-wrapper {
+    width: 100%;
+    max-width: 240px;
+    margin: 0 auto 10px auto;
+}
+
+.logo-fiuza-img {
+    width: 100%;
+    max-width: 240px;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+    object-fit: contain;
+}
+
+.status-bar {
+    text-align: center;
+    font-size: 12px;
+    font-weight: bold;
+    padding: 8px;
+    margin-bottom: 15px;
+    border-radius: 6px;
+}
+
+.online { 
+    background-color: #d4edda; 
+    color: #155724; 
+    border: 1px solid #c3e6cb; 
+}
+
+.offline { 
+    background-color: #f8d7da; 
+    color: #721c24; 
+    border: 1px solid #f5c6cb; 
+}
+
+h2 {
+    text-align: center;
+    color: var(--azul-fiuza);
+    font-size: 18px;
+    margin-top: 4px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+label {
+    display: block;
+    font-size: 13px;
+    font-weight: bold;
+    color: var(--azul-fiuza);
+    margin-bottom: 5px;
+    text-transform: uppercase;
+}
+
+input, select {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 15px;
+    outline: none;
+    background-color: #fff;
+}
+
+input:focus, select:focus {
+    border-color: var(--azul-fiuza);
+}
+
+/* Destaque visual quando o horímetro inicial estiver apenas leitura */
+input[readonly] {
+    background-color: #eef2f5;
+    cursor: pointer;
+}
+
+.row {
+    display: flex;
+    gap: 10px;
+}
+
+.row .form-group {
+    flex: 1;
+}
+
+.toggle-group {
+    display: flex;
+    gap: 5px;
+    margin-bottom: 6px;
+}
+
+.toggle-btn {
+    flex: 1;
+    padding: 10px 4px;
+    font-size: 11px;
+    font-weight: bold;
+    border: 1px solid var(--azul-fiuza);
+    background-color: #ffffff;
+    color: var(--azul-fiuza);
+    border-radius: 6px;
+    cursor: pointer;
+    text-transform: uppercase;
+    text-align: center;
+}
+
+.toggle-btn.active {
+    background-color: var(--azul-fiuza);
+    color: #ffffff;
+}
+
+.input-with-actions {
+    display: flex;
+    gap: 6px;
+}
+
+.btn-mini {
+    padding: 0 14px;
+    font-size: 18px;
+    font-weight: bold;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    color: #fff;
+}
+
+.btn-add { background-color: var(--verde-sucesso); }
+.btn-del { background-color: var(--vermelho-erro); }
+
+.btn-container {
+    margin-top: 20px;
+    display: flex;
+    gap: 10px;
+}
+
+.btn-acao {
+    flex: 1;
+    padding: 14px;
+    border: none;
+    border-radius: 6px;
+    font-size: 15px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.btn-pdf { background-color: var(--laranja-fiuza); color: #ffffff; }
+.btn-salvar { background-color: var(--azul-fiuza); color: #ffffff; }
