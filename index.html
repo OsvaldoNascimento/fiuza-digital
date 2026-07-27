@@ -18,13 +18,13 @@
 <body>
 
   <!-- ==========================================
-       CABEÇALHO / LOGO GRUPO FIUZA
+       CABEÇALHO / LOGO OFICIAL GRUPO FIUZA
        ========================================== -->
   <header class="top-header">
     <div class="header-container">
       <div class="brand">
-        <!-- Logo Oficial ou Sigla GF -->
-        <div class="logo-circle">GF</div>
+        <!-- Logo Oficial em Imagem -->
+        <img src="logo_oficial.png" alt="Grupo Fiuza" class="logo-oficial-img">
         <div class="brand-info">
           <h1>FIUZA DIGITAL</h1>
           <p>Gestão de Frota e Manutenção</p>
@@ -265,7 +265,10 @@
     </div>
   </div>
 
-  <!-- Script de Registro do Service Worker -->
+  <!-- Conexão com o script de lógica -->
+  <script src="script.js"></script>
+
+  <!-- Script de Registro do Service Worker (PWA) -->
   <script>
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('./service-worker.js')
