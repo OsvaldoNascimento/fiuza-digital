@@ -1,638 +1,444 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fiuza Digital - Relatório Diário</title>
-    
-    <!-- Link para o CSS Externo -->
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fiuza Digital - Gestão Integrada de Frota e Operações</title>
+  
+  <!-- Fontes e Ícones -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
-    <!-- SDKs Compatíveis do Firebase -->
-    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
-    
-    <!-- Bibliotecas pdfMake -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+  <!-- Estilos Customizados do Projeto -->
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<div class="container">
-    <div id="status-rede" class="status-bar online">Conectado - Sincronização Ativa</div>
-
-    <div class="header-logo">
-        <div class="logo-wrapper">
-            <!-- Imagem PNG Local do GitHub -->
-            <img src="logo_oficial.png" alt="Grupo Fiuza" class="logo-fiuza-img">
+  <!-- ==========================================
+       HEADER PRINCIPAL COM BEM-VINDO
+       ========================================== -->
+  <header class="app-header">
+    <div class="header-content">
+      <div class="brand-section">
+        <div class="logo-gf">GF</div>
+        <div class="brand-title">
+          <h1>GRUPO FIUZA DIGITAL</h1>
+          <p>Sistema de Gestão de Frota, Manutenção e Operações</p>
         </div>
-        <h2>Fiuza Digital - Relatório Diário</h2>
+      </div>
+      <div class="user-welcome-card">
+        <div class="avatar-icon">
+          <i class="fa-solid fa-user-gear"></i>
+        </div>
+        <div class="welcome-text">
+          <h2>Bem-vindo, Sr. Osvaldo</h2>
+          <span>Chefe de Manutenção e Frota</span>
+        </div>
+      </div>
     </div>
+  </header>
 
-    <form id="rdo-form">
-        <div class="row">
-            <div class="form-group">
-                <label for="data">Data</label>
-                <input type="date" id="data" required>
-            </div>
-            <div class="form-group">
-                <label for="frente">Frente de Serviço</label>
-                <select id="frente" required>
-                    <option value="" disabled selected>Selecione...</option>
-                    <option value="Nucleação">Nucleação</option>
-                    <option value="Supressão">Supressão</option>
-                    <option value="Romaneio">Romaneio</option>
-                    <option value="Manutenção">Manutenção</option>
-                </select>
-            </div>
+  <!-- ==========================================
+       BARRA DE NAVEGAÇÃO PRINCIPAL (3 ÁREAS)
+       ========================================== -->
+  <nav class="nav-container">
+    <div class="nav-tabs">
+      <button class="nav-btn active" onclick="switchTab('diaria')">
+        <i class="fa-solid fa-clipboard-check"></i> Parte Diária
+      </button>
+      <button class="nav-btn" onclick="switchTab('manutencao')">
+        <i class="fa-solid fa-wrench"></i> Manutenção & O.S.
+      </button>
+      <button class="nav-btn" onclick="switchTab('colaboradores')">
+        <i class="fa-solid fa-users-gear"></i> Colaboradores & EPIs
+      </button>
+    </div>
+  </nav>
+
+  <!-- ==========================================
+       CONTEÚDO PRINCIPAL
+       ========================================== -->
+  <main class="main-content">
+
+    <!-- ==========================================
+         ABA 1: PARTE DIÁRIA
+         ========================================== -->
+    <section id="tab-diaria" class="tab-pane active">
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-info">
+            <h3>Apontamentos Hoje</h3>
+            <p id="stat-diaria-hoje">12</p>
+          </div>
+          <div class="stat-icon icon-blue"><i class="fa-solid fa-calendar-day"></i></div>
         </div>
-
-        <!-- Encarregado -->
-        <div class="form-group">
-            <label for="encarregado">Encarregado</label>
-            <div class="input-with-actions">
-                <select id="encarregado" required>
-                    <!-- Opções dinâmicas -->
-                </select>
-                <button type="button" class="btn-mini btn-add" onclick="adicionarEncarregado()" title="Adicionar Novo">+</button>
-                <button type="button" class="btn-mini btn-del" onclick="removerEncarregado()" title="Remover Selecionado">-</button>
-            </div>
+        <div class="stat-card">
+          <div class="stat-info">
+            <h3>Horas Trabalhadas Total</h3>
+            <p id="stat-diaria-horas">148 h</p>
+          </div>
+          <div class="stat-icon icon-green"><i class="fa-solid fa-clock"></i></div>
         </div>
-
-        <!-- Seleção de Frota e Subcategoria Dinâmica -->
-        <div class="form-group">
-            <label>Frota / Categoria</label>
-            <div class="toggle-group">
-                <button type="button" id="btn-cat-equipamento" class="toggle-btn active" onclick="selecionarCategoriaFrota('equipamento')">Equipamento</button>
-                <button type="button" id="btn-cat-cb" class="toggle-btn" onclick="selecionarCategoriaFrota('cb')">CB</button>
-                <button type="button" id="btn-cat-pickup" class="toggle-btn" onclick="selecionarCategoriaFrota('pickup')">Pick-up</button>
-            </div>
-
-            <!-- Seleção do Tipo de Máquina/Veículo -->
-            <div style="margin-top: 10px;">
-                <label for="select-tipo-equipamento">Tipo / Família do Equipamento</label>
-                <select id="select-tipo-equipamento" onchange="alterarTipoEquipamento()" required>
-                    <!-- Opções dinâmicas de tipos -->
-                </select>
-            </div>
-            
-            <!-- Seleção da TAG Específica -->
-            <div style="margin-top: 10px;">
-                <label for="select-identificacao">Identificação (TAG)</label>
-                <div class="input-with-actions">
-                    <select id="select-identificacao" onchange="aoSelecionarTag()" required>
-                        <!-- Opções dinâmicas de TAGs -->
-                    </select>
-                    <button type="button" class="btn-mini btn-add" onclick="adicionarIdentificacao()" title="Adicionar TAG">+</button>
-                    <button type="button" class="btn-mini btn-del" onclick="removerIdentificacao()" title="Remover TAG">-</button>
-                </div>
-            </div>
+        <div class="stat-card">
+          <div class="stat-info">
+            <h3>Operadores Ativos</h3>
+            <p id="stat-diaria-operadores">8</p>
+          </div>
+          <div class="stat-icon icon-orange"><i class="fa-solid fa-hard-hat"></i></div>
         </div>
+      </div>
 
-        <!-- Seleção Profissional (Operador | Motorista) -->
-        <div class="form-group">
-            <label>Profissional</label>
-            <div class="toggle-group">
-                <button type="button" id="btn-tipo-operador" class="toggle-btn active" onclick="selecionarTipoProfissional('operador')">Operador</button>
-                <button type="button" id="btn-tipo-motorista" class="toggle-btn" onclick="selecionarTipoProfissional('motorista')">Motorista</button>
-            </div>
+      <div class="action-bar">
+        <h3>📋 Registro Diário de Operações e Apontamentos</h3>
+        <button class="btn-primary" onclick="openModal('modal-novo-apontamento')">
+          <i class="fa-solid fa-plus"></i> Novo Apontamento Diário
+        </button>
+      </div>
 
-            <div class="input-with-actions">
-                <select id="select-profissional" required>
-                    <!-- Opções dinâmicas -->
-                </select>
-                <button type="button" class="btn-mini btn-add" onclick="adicionarProfissional()" title="Adicionar Novo">+</button>
-                <button type="button" class="btn-mini btn-del" onclick="removerProfissional()" title="Remover Selecionado">-</button>
-            </div>
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Data / Hora</th>
+              <th>TAG / Equipamento</th>
+              <th>Operador</th>
+              <th>Horímetro Inicial</th>
+              <th>Horímetro Final</th>
+              <th>Total Horas</th>
+              <th>Localização</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="lista-diaria">
+            <tr>
+              <td>27/07/2026 - 07:00</td>
+              <td><strong>CAT-01</strong> (Escavadeira)</td>
+              <td>João Silva</td>
+              <td>1.240,0</td>
+              <td>1.248,5</td>
+              <td>8.5 h</td>
+              <td><span class="badge badge-mina">Mina</span></td>
+              <td><span class="badge badge-ativo">Operacional</span></td>
+            </tr>
+            <tr>
+              <td>27/07/2026 - 07:30</td>
+              <td><strong>CAM-05</strong> (Caminhão Caçamba)</td>
+              <td>Carlos Souza</td>
+              <td>85.200</td>
+              <td>85.200</td>
+              <td>0.0 h</td>
+              <td><span class="badge badge-cidade">Cidade/Oficina</span></td>
+              <td><span class="badge badge-manutencao">Em Manutenção</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ==========================================
+         ABA 2: MANUTENÇÃO & O.S.
+         ========================================== -->
+    <section id="tab-manutencao" class="tab-pane">
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-info">
+            <h3>Total da Frota</h3>
+            <p id="stat-manut-total">0</p>
+          </div>
+          <div class="stat-icon icon-blue"><i class="fa-solid fa-truck-monster"></i></div>
         </div>
-
-        <div class="row">
-            <div class="form-group">
-                <label for="horimetro_inicio">Horímetro Início</label>
-                <input type="number" step="0.1" id="horimetro_inicio" placeholder="0.0" readonly onclick="confirmarAlteracaoHorimetroInicio()" required>
-            </div>
-            <div class="form-group">
-                <label for="horimetro_fim">Horímetro Fim</label>
-                <input type="number" step="0.1" id="horimetro_fim" placeholder="0.0" required>
-            </div>
+        <div class="stat-card">
+          <div class="stat-info">
+            <h3>Ativos Operacionais</h3>
+            <p id="stat-manut-ativos">0</p>
+          </div>
+          <div class="stat-icon icon-green"><i class="fa-solid fa-circle-check"></i></div>
         </div>
-
-        <div class="btn-container">
-            <button type="button" class="btn-acao btn-salvar" onclick="salvarRelatorio()">Salvar Relatório</button>
-            <button type="button" class="btn-acao btn-pdf" onclick="gerarPDF()">PDF Fiuza</button>
+        <div class="stat-card">
+          <div class="stat-info">
+            <h3>Em Manutenção</h3>
+            <p id="stat-manut-parados">0</p>
+          </div>
+          <div class="stat-icon icon-red"><i class="fa-solid fa-triangle-exclamation"></i></div>
         </div>
-    </form>
-</div>
-
-<script>
-    if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-            navigator.serviceWorker.register('./service-worker.js')
-                .then(reg => console.log('Service Worker registrado!'))
-                .catch(err => console.log('Falha ao registrar Service Worker: ', err));
-        });
-    }
-
-    const padraoEquipamentos = [
-        {
-            tipo: "TRATOR DE ESTEIRA",
-            tags: ["SH_430", "SH_445", "SH_449", "SH_565", "SH_567", "SH_569", "SH_847", "SH_886"]
-        },
-        {
-            tipo: "PÁ CARREGADEIRA",
-            tags: ["SH_168", "SH_461", "SH_10299", "SH_10389", "SH_10390", "SH_10781", "SH_10782"]
-        },
-        {
-            tipo: "ESCAVADEIRA HIDRÁULICA",
-            tags: ["SH_400", "SH_403", "SH_435", "SH_443", "SH_471"]
-        },
-        {
-            tipo: "GARRA TRAÇADORA",
-            tags: ["SH_462", "SH_463", "SH_464", "SH_10774", "SH_10777"]
-        },
-        {
-            tipo: "MOTONIVELADORA",
-            tags: ["SH_451", "SH_460"]
-        }
-    ];
-
-    const padraoCB = [
-        {
-            tipo: "CAMINHÃO BASCULANTE",
-            tags: [
-                "SH_234", "SH_235", "SH_236", "SH_237", "SH_252", "SH_262", 
-                "SH_272", "SH_273", "SH_274", "SH_275", "SH_307", "SH_10740", 
-                "SH_10741", "SH_10742", "SH_10743", "SH_10744", "SH_10745", 
-                "SH_10746", "SH_10747", "SH_10748", "SH_10749"
-            ]
-        },
-        { tipo: "CAMINHÃO MADEIREIRO", tags: ["SH_212"] },
-        { tipo: "CAMINHÃO PIPA", tags: ["SH_220", "SH_222", "SH_231"] },
-        { tipo: "CAMINHÃO COMBOIO", tags: ["SH_243", "SH_10575"] },
-        { tipo: "CAMINHÃO OFICINA", tags: ["SH_269"] },
-        { tipo: "CAMINHÃO PRANCHA", tags: ["SH_305", "SH_311"] },
-        { tipo: "ÔNIBUS", tags: ["SH_10719", "SH_10787"] }
-    ];
-
-    const padraoPickup = [
-        { tipo: "CAMINHONETE / PICK-UP", tags: ["SH_10699", "SH_10717", "SH_10718", "SH_10765"] }
-    ];
-
-    const padraoMotoristas = [
-        "CARLOS ANTONIO PINHEIRO DO NASCIMENTO", "CLEITON ALVES DE OLIVEIRA", "EMILSON MARTINS MOREIRA",
-        "ERNANDES RODRIGUES COSTA", "EVANDO FRANCISCO RODRIGUES COSTA", "FRANCISCO ADRIANO DA SILVEIRA LIMA",
-        "FRANCISCO DE ASSIS LOPES RIBEIRO", "GILBERTO PORTELA DE ARAUJO", "JHONATAN OLIVEIRA BEZERRA",
-        "JIMMY LEAL LOPES", "JOSE MARCOS DUARTE SILVA", "JOSE ROBERTO BAENA BARBOSA", "MANOEL MOURA DA SILVA",
-        "MARCELO ANTONIO MOURA GALVAO", "OBEDE MELO DA SILVA", "ORDERLEI ALVES GONÇALVES",
-        "RAIMUNDO NONATO LIMA MESQUITA", "REINALDO GONÇALVES FERREIRA", "SALES ALVES MARIM",
-        "FRANCISCO NUNES DE MORAIS", "ELISVALDO SARGES RODRIGUES", "ZULRIARLLS GONÇALVES"
-    ];
-
-    const padraoMotoristasPickup = [
-        "ADELSON DE OLIVEIRA ARAUJO",
-        "ALEX TAVARES",
-        "MILTON PINA C.",
-        "OSVALDO NASCIMENTO",
-        "VICENTE AIRES R."
-    ];
-
-    const padraoEncarregados = ["MILTON PINA C.", "OSVALDO NASCIMENTO", "VICENTE AIRES R."];
-
-    const padraoOperadores = [
-        "ROSÁRIO MOREIRA DA COSTA", "AGNALDO LEANDRO DA SILVA", "ANTONIO JOSE DA SILVA",
-        "DANIEL SANTOS ABREU SOUSA", "EDINALDO DE SOUSA SILVA", "ELIOMAR FERREIRA DE ASSUNCAO",
-        "ROBERTO ALVES DA SILVA", "TAMIRES DE SOUSA MARQUES", "VALDO MONTEIRO CORREA",
-        "DHOW ALBERTH PINHEIRO RAMOS", "ADRIANO BRITO MOREIRA", "ALDOLINO EVANGELISTA DE SOUZA",
-        "JOSE DE RIBAMAR LIMA", "JOSE FERNANDO DE OLIVEIRA BARBOSA", "JOSE GENTIL LIMA",
-        "VALDEMIR FERREIRA DE BRITO", "ANTONIO MARCOS SANTOS ARAUJO"
-    ];
-
-    let listaEquipamentos = JSON.parse(localStorage.getItem('fiuza_equipamentos_v3')) || padraoEquipamentos;
-    let listaCB = JSON.parse(localStorage.getItem('fiuza_cb_v3')) || padraoCB;
-    let listaPickup = JSON.parse(localStorage.getItem('fiuza_pickup_v3')) || padraoPickup;
-
-    let listaMotoristas = JSON.parse(localStorage.getItem('fiuza_motoristas')) || padraoMotoristas;
-    let listaMotoristasPickup = JSON.parse(localStorage.getItem('fiuza_motoristas_pickup')) || padraoMotoristasPickup;
-    let listaEncarregados = JSON.parse(localStorage.getItem('fiuza_encarregados_v2')) || padraoEncarregados;
-    let listaOperadores = JSON.parse(localStorage.getItem('fiuza_operadores')) || padraoOperadores;
-
-    let categoriaFrotaAtual = 'equipamento';
-    let tipoProfissionalAtual = 'operador';
-    let horimetroPermitidoEdicao = false;
-
-    const firebaseConfig = {
-        apiKey: "AIzaSyBs9tGAhk2dRWKHsyCujHqywe08Z...",
-        authDomain: "fiuza-digital.firebaseapp.com",
-        projectId: "fiuza-digital",
-        storageBucket: "fiuza-digital.appspot.com",
-        messagingSenderId: "1061198364805",
-        appId: "1:1061198364805:web:98924dbc63a61b...",
-        measurementId: "G-X1JGTE3D4G"
-    };
-
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
-    db.enablePersistence().catch(() => {});
-
-    const statusBar = document.getElementById('status-rede');
-    window.addEventListener('online', () => {
-        statusBar.className = "status-bar online";
-        statusBar.innerText = "Conectado - Sincronização Ativa";
-    });
-    window.addEventListener('offline', () => {
-        statusBar.className = "status-bar offline";
-        statusBar.innerText = "Modo Offline - Dados salvos localmente";
-    });
-
-    document.getElementById('data').valueAsDate = new Date();
-
-    function renderizarEncarregados() {
-        const select = document.getElementById('encarregado');
-        select.innerHTML = '<option value="" disabled selected>Selecione...</option>';
-        listaEncarregados.forEach(nome => {
-            select.innerHTML += `<option value="${nome}">${nome}</option>`;
-        });
-    }
-
-    function renderizarTiposEquipamento() {
-        const selectTipo = document.getElementById('select-tipo-equipamento');
-        selectTipo.innerHTML = '<option value="" disabled selected>Selecione o Tipo...</option>';
-
-        let lista = categoriaFrotaAtual === 'equipamento' ? listaEquipamentos : (categoriaFrotaAtual === 'cb' ? listaCB : listaPickup);
-
-        lista.forEach((item, idx) => {
-            selectTipo.innerHTML += `<option value="${idx}">${item.tipo}</option>`;
-        });
-
-        if (lista.length > 0) {
-            selectTipo.value = "0";
-            renderizarTagsPorTipo();
-        }
-    }
-
-    function alterarTipoEquipamento() {
-        renderizarTagsPorTipo();
-    }
-
-    function renderizarTagsPorTipo() {
-        const selectTipo = document.getElementById('select-tipo-equipamento');
-        const selectTag = document.getElementById('select-identificacao');
-        selectTag.innerHTML = '<option value="" disabled selected>Selecione a TAG...</option>';
-
-        const idxTipo = parseInt(selectTipo.value);
-        let lista = categoriaFrotaAtual === 'equipamento' ? listaEquipamentos : (categoriaFrotaAtual === 'cb' ? listaCB : listaPickup);
-
-        if (!isNaN(idxTipo) && lista[idxTipo]) {
-            lista[idxTipo].tags.forEach(tag => {
-                selectTag.innerHTML += `<option value="${tag}">${tag}</option>`;
-            });
-        }
-    }
-
-    function renderizarProfissionais() {
-        const select = document.getElementById('select-profissional');
-        select.innerHTML = '<option value="" disabled selected>Selecione...</option>';
-        
-        let lista = [];
-        if (tipoProfissionalAtual === 'operador') {
-            lista = listaOperadores;
-        } else if (categoriaFrotaAtual === 'pickup') {
-            lista = listaMotoristasPickup;
-        } else {
-            lista = listaMotoristas;
-        }
-
-        lista.forEach(nome => {
-            select.innerHTML += `<option value="${nome}">${nome}</option>`;
-        });
-    }
-
-    function selecionarCategoriaFrota(cat) {
-        categoriaFrotaAtual = cat;
-        document.getElementById('btn-cat-equipamento').classList.toggle('active', cat === 'equipamento');
-        document.getElementById('btn-cat-cb').classList.toggle('active', cat === 'cb');
-        document.getElementById('btn-cat-pickup').classList.toggle('active', cat === 'pickup');
-        
-        renderizarTiposEquipamento();
-
-        if (cat === 'equipamento') {
-            selecionarTipoProfissional('operador');
-        } else {
-            selecionarTipoProfissional('motorista');
-        }
-    }
-
-    function selecionarTipoProfissional(tipo) {
-        tipoProfissionalAtual = tipo;
-        document.getElementById('btn-tipo-operador').classList.toggle('active', tipo === 'operador');
-        document.getElementById('btn-tipo-motorista').classList.toggle('active', tipo === 'motorista');
-        renderizarProfissionais();
-    }
-
-    function aoSelecionarTag() {
-        const tagSelecionada = document.getElementById('select-identificacao').value;
-        const inputHini = document.getElementById('horimetro_inicio');
-        
-        if (!tagSelecionada) return;
-
-        db.collection("relatorios")
-            .where("identificacao_tag", "==", tagSelecionada)
-            .orderBy("criadoEm", "desc")
-            .limit(1)
-            .get()
-            .then((querySnapshot) => {
-                if (!querySnapshot.empty) {
-                    const ultimoRelatorio = querySnapshot.docs[0].data();
-                    if (ultimoRelatorio.horimetro_fim !== undefined) {
-                        inputHini.value = ultimoRelatorio.horimetro_fim;
-                        localStorage.setItem(`fiuza_ultimo_hfim_${tagSelecionada}`, ultimoRelatorio.horimetro_fim);
-                        return;
-                    }
-                }
-                
-                const ultimoLocal = localStorage.getItem(`fiuza_ultimo_hfim_${tagSelecionada}`);
-                if (ultimoLocal) {
-                    inputHini.value = ultimoLocal;
-                } else {
-                    inputHini.value = "0.0";
-                }
-            })
-            .catch(() => {
-                const ultimoLocal = localStorage.getItem(`fiuza_ultimo_hfim_${tagSelecionada}`);
-                inputHini.value = ultimoLocal || "0.0";
-            });
-
-        inputHini.readOnly = true;
-        horimetroPermitidoEdicao = false;
-    }
-
-    function confirmarAlteracaoHorimetroInicio() {
-        const inputHini = document.getElementById('horimetro_inicio');
-        
-        if (horimetroPermitidoEdicao) return;
-
-        const resposta = confirm("Você quer alterar o horímetro inicial do equipamento?");
-        
-        if (resposta) {
-            horimetroPermitidoEdicao = true;
-            inputHini.readOnly = false;
-            inputHini.focus();
-        } else {
-            inputHini.blur();
-        }
-    }
-
-    function adicionarEncarregado() {
-        const novo = prompt("Digite o nome do novo Encarregado:");
-        if (novo && novo.trim() !== '') {
-            const valor = novo.trim().toUpperCase();
-            listaEncarregados.push(valor);
-            listaEncarregados.sort();
-            localStorage.setItem('fiuza_encarregados_v2', JSON.stringify(listaEncarregados));
-            renderizarEncarregados();
-            document.getElementById('encarregado').value = valor;
-        }
-    }
-
-    function removerEncarregado() {
-        const select = document.getElementById('encarregado');
-        const selecionado = select.value;
-        if (!selecionado) return alert('Selecione um encarregado para remover!');
-
-        if (confirm(`Deseja remover "${selecionado}" da lista?`)) {
-            listaEncarregados = listaEncarregados.filter(nome => nome !== selecionado);
-            localStorage.setItem('fiuza_encarregados_v2', JSON.stringify(listaEncarregados));
-            renderizarEncarregados();
-        }
-    }
-
-    function adicionarIdentificacao() {
-        let lista = categoriaFrotaAtual === 'equipamento' ? listaEquipamentos : (categoriaFrotaAtual === 'cb' ? listaCB : listaPickup);
-        const selectTipo = document.getElementById('select-tipo-equipamento');
-        let idxTipo = parseInt(selectTipo.value);
-
-        if (isNaN(idxTipo)) {
-            let tiposTexto = lista.map((item, idx) => `${idx + 1} - ${item.tipo}`).join('\n');
-            let escolha = prompt(`Escolha o Tipo de Equipamento:\n\n${tiposTexto}`);
-            idxTipo = parseInt(escolha) - 1;
-        }
-
-        if (isNaN(idxTipo) || !lista[idxTipo]) {
-            return alert("Tipo de equipamento inválido!");
-        }
-
-        const tipoNome = lista[idxTipo].tipo;
-        const novaTag = prompt(`Digite a nova TAG para ${tipoNome} (Ex: SH_100):`);
-
-        if (novaTag && novaTag.trim() !== '') {
-            let tagFormatada = novaTag.trim().toUpperCase();
-            if (!tagFormatada.startsWith('SH_')) {
-                tagFormatada = 'SH_' + tagFormatada;
-            }
-
-            lista[idxTipo].tags.push(tagFormatada);
-
-            if (categoriaFrotaAtual === 'equipamento') {
-                localStorage.setItem('fiuza_equipamentos_v3', JSON.stringify(listaEquipamentos));
-            } else if (categoriaFrotaAtual === 'cb') {
-                localStorage.setItem('fiuza_cb_v3', JSON.stringify(listaCB));
-            } else {
-                localStorage.setItem('fiuza_pickup_v3', JSON.stringify(listaPickup));
-            }
-
-            selectTipo.value = idxTipo.toString();
-            renderizarTagsPorTipo();
-            document.getElementById('select-identificacao').value = tagFormatada;
-            aoSelecionarTag();
-        }
-    }
-
-    function removerIdentificacao() {
-        const selectTag = document.getElementById('select-identificacao');
-        const tagSelecionada = selectTag.value;
-
-        if (!tagSelecionada) return alert('Selecione uma TAG para remover!');
-
-        const selectTipo = document.getElementById('select-tipo-equipamento');
-        const idxTipo = parseInt(selectTipo.value);
-        let lista = categoriaFrotaAtual === 'equipamento' ? listaEquipamentos : (categoriaFrotaAtual === 'cb' ? listaCB : listaPickup);
-
-        if (confirm(`Deseja remover a TAG "${tagSelecionada}"?`)) {
-            lista[idxTipo].tags = lista[idxTipo].tags.filter(t => t !== tagSelecionada);
-
-            if (categoriaFrotaAtual === 'equipamento') {
-                localStorage.setItem('fiuza_equipamentos_v3', JSON.stringify(listaEquipamentos));
-            } else if (categoriaFrotaAtual === 'cb') {
-                localStorage.setItem('fiuza_cb_v3', JSON.stringify(listaCB));
-            } else {
-                localStorage.setItem('fiuza_pickup_v3', JSON.stringify(listaPickup));
-            }
-
-            renderizarTagsPorTipo();
-        }
-    }
-
-    function adicionarProfissional() {
-        const tipoNome = tipoProfissionalAtual === 'operador' ? 'Operador' : 'Motorista';
-        const novo = prompt(`Digite o nome do novo ${tipoNome}:`);
-        if (novo && novo.trim() !== '') {
-            const valor = novo.trim().toUpperCase();
-            if (tipoProfissionalAtual === 'operador') {
-                listaOperadores.push(valor);
-                listaOperadores.sort();
-                localStorage.setItem('fiuza_operadores', JSON.stringify(listaOperadores));
-            } else if (categoriaFrotaAtual === 'pickup') {
-                listaMotoristasPickup.push(valor);
-                listaMotoristasPickup.sort();
-                localStorage.setItem('fiuza_motoristas_pickup', JSON.stringify(listaMotoristasPickup));
-            } else {
-                listaMotoristas.push(valor);
-                listaMotoristas.sort();
-                localStorage.setItem('fiuza_motoristas', JSON.stringify(listaMotoristas));
-            }
-            renderizarProfissionais();
-            document.getElementById('select-profissional').value = valor;
-        }
-    }
-
-    function removerProfissional() {
-        const select = document.getElementById('select-profissional');
-        const selecionado = select.value;
-        if (!selecionado) return alert('Selecione um nome para remover!');
-
-        if (confirm(`Deseja remover "${selecionado}" da lista?`)) {
-            if (tipoProfissionalAtual === 'operador') {
-                listaOperadores = listaOperadores.filter(nome => nome !== selecionado);
-                localStorage.setItem('fiuza_operadores', JSON.stringify(listaOperadores));
-            } else if (categoriaFrotaAtual === 'pickup') {
-                listaMotoristasPickup = listaMotoristasPickup.filter(nome => nome !== selecionado);
-                localStorage.setItem('fiuza_motoristas_pickup', JSON.stringify(listaMotoristasPickup));
-            } else {
-                listaMotoristas = listaMotoristas.filter(nome => nome !== selecionado);
-                localStorage.setItem('fiuza_motoristas', JSON.stringify(listaMotoristas));
-            }
-            renderizarProfissionais();
-        }
-    }
-
-    renderizarEncarregados();
-    renderizarTiposEquipamento();
-    renderizarProfissionais();
-
-    function salvarRelatorio() {
-        const frente = document.getElementById('frente').value;
-        const encarregado = document.getElementById('encarregado').value;
-        const profissional = document.getElementById('select-profissional').value;
-        const identificacao = document.getElementById('select-identificacao').value;
-        const hFimVal = parseFloat(document.getElementById('horimetro_fim').value) || 0;
-
-        const dados = {
-            data: document.getElementById('data').value,
-            frente: frente,
-            encarregado: encarregado,
-            categoria_frota: categoriaFrotaAtual,
-            identificacao_tag: identificacao,
-            funcao_profissional: tipoProfissionalAtual,
-            nome_profissional: profissional,
-            horimetro_inicio: parseFloat(document.getElementById('horimetro_inicio').value) || 0,
-            horimetro_fim: hFimVal,
-            criadoEm: firebase.firestore.FieldValue.serverTimestamp()
-        };
-
-        if(!frente || !encarregado || !identificacao || !profissional) {
-            alert('Por favor, preencha todos os campos!');
-            return;
-        }
-
-        db.collection("relatorios").add(dados)
-        .then(() => {
-            localStorage.setItem(`fiuza_ultimo_hfim_${identificacao}`, hFimVal);
-            alert('✓ Relatório salvo com sucesso!');
-        })
-        .catch((error) => {
-            alert("Erro ao salvar: " + error.message);
-        });
-    }
-
-    function gerarPDF() {
-        const data = document.getElementById('data').value;
-        const frente = document.getElementById('frente').value;
-        const encarregado = document.getElementById('encarregado').value;
-        const profissional = document.getElementById('select-profissional').value;
-        const identificacao = document.getElementById('select-identificacao').value;
-        const hini = parseFloat(document.getElementById('horimetro_inicio').value) || 0;
-        const hfim = parseFloat(document.getElementById('horimetro_fim').value) || 0;
-
-        if(!frente || !encarregado || !identificacao || !profissional) {
-            alert('Por favor, preencha os dados do relatório antes de gerar o PDF!');
-            return;
-        }
-
-        const dataFormatada = data.split('-').reverse().join('/');
-        const hTotal = (hfim - hini).toFixed(1);
-
-        const docDefinition = {
-            pageSize: 'A4',
-            pageMargins: [40, 40, 40, 40],
-            content: [
-                {
-                    columns: [
-                        {
-                            text: 'GRUPO FIUZA',
-                            fontSize: 18,
-                            bold: true,
-                            color: '#003366'
-                        },
-                        {
-                            text: 'RELATÓRIO DIÁRIO DE OPERAÇÃO (RDO)',
-                            alignment: 'right',
-                            fontSize: 10,
-                            color: '#666666',
-                            margin: [0, 5, 0, 0]
-                        }
-                    ]
-                },
-                {
-                    canvas: [{ type: 'line', x1: 0, y1: 10, x2: 515, y2: 10, lineWidth: 3, lineColor: '#FF6600' }]
-                },
-                { text: ' ', margin: [0, 10] },
-                {
-                    table: {
-                        widths: ['50%', '50%'],
-                        body: [
-                            [
-                                { text: `Data: ${dataFormatada}`, fillColor: '#f9f9f9', padding: 8 },
-                                { text: `Frente de Serviço: ${frente}`, fillColor: '#f9f9f9', padding: 8 }
-                            ],
-                            [
-                                { text: `Encarregado: ${encarregado}`, colSpan: 2, padding: 8 },
-                                {}
-                            ],
-                            [
-                                { text: `TAG / Frota: ${identificacao}`, fillColor: '#f9f9f9', padding: 8 },
-                                { text: `Função: ${tipoProfissionalAtual.toUpperCase()}`, fillColor: '#f9f9f9', padding: 8 }
-                            ],
-                            [
-                                { text: `Nome: ${profissional}`, colSpan: 2, padding: 8 },
-                                {}
-                            ],
-                            [
-                                { text: `Horímetro Inicial: ${hini}`, fillColor: '#f9f9f9', padding: 8 },
-                                { text: `Horímetro Final: ${hfim}`, fillColor: '#f9f9f9', padding: 8 }
-                            ],
-                            [
-                                { text: `Total de Horas Trabalhadas: ${hTotal} hrs`, colSpan: 2, fillColor: '#eef2f5', bold: true, color: '#003366', padding: 10 },
-                                {}
-                            ]
-                        ]
-                    }
-                }
-            ]
-        };
-
-        pdfMake.createPdf(docDefinition).download(`RDO_${identificacao}_${data}.pdf`);
-    }
-</script>
-
+      </div>
+
+      <div class="action-bar">
+        <div class="filter-group">
+          <button class="btn-filter active" onclick="filtrarManutencao('TODOS')">Todos</button>
+          <button class="btn-filter" onclick="filtrarManutencao('MÁQUINAS AMARAL')">Máquinas</button>
+          <button class="btn-filter" onclick="filtrarManutencao('CAMINHÕES')">Caminhões</button>
+          <button class="btn-filter" onclick="filtrarManutencao('VEÍCULOS LEVES')">Veículos Leves</button>
+          <button class="btn-filter" onclick="filtrarManutencao('GERADORES')">Outros</button>
+        </div>
+      </div>
+
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>TAG / Equipamento</th>
+              <th>Categoria</th>
+              <th>Horímetro/KM Atual</th>
+              <th>Status</th>
+              <th>Localização</th>
+              <th>Preventivas (Última / Próxima)</th>
+              <th>Horas Parado</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody id="lista-manutencao">
+            <!-- Renderizado via JS -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ==========================================
+         ABA 3: COLABORADORES & EPIS
+         ========================================== -->
+    <section id="tab-colaboradores" class="tab-pane">
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-info">
+            <h3>Total Colaboradores</h3>
+            <p id="stat-colab-total">0</p>
+          </div>
+          <div class="stat-icon icon-blue"><i class="fa-solid fa-id-card"></i></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-info">
+            <h3>Pedidos Solicitados</h3>
+            <p id="stat-pedidos-total">0</p>
+          </div>
+          <div class="stat-icon icon-orange"><i class="fa-solid fa-boxes-packing"></i></div>
+        </div>
+      </div>
+
+      <div class="action-bar">
+        <div class="filter-group">
+          <button class="btn-filter active" onclick="filtrarSetor('TODOS')">Todos os Setores</button>
+          <button class="btn-filter" onclick="filtrarSetor('Nucleação')">Nucleação</button>
+          <button class="btn-filter" onclick="filtrarSetor('Manutenção')">Manutenção</button>
+          <button class="btn-filter" onclick="filtrarSetor('Supressão')">Supressão</button>
+          <button class="btn-filter" onclick="filtrarSetor('Romaneio')">Romaneio</button>
+        </div>
+        <div style="display: flex; gap: 0.5rem;">
+          <button class="btn-secondary" onclick="openModal('modal-add-colaborador')">
+            <i class="fa-solid fa-user-plus"></i> Add Colaborador
+          </button>
+          <button class="btn-primary" onclick="openModal('modal-novo-pedido-epi')">
+            <i class="fa-solid fa-shirt"></i> Pedido EPI / Uniforme
+          </button>
+          <button class="btn-secondary" onclick="abrirRelatorioPedidosGeneral()" style="background: var(--primary-navy)">
+            <i class="fa-solid fa-file-pdf"></i> Relatório Geral Pedidos
+          </button>
+        </div>
+      </div>
+
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Matrícula</th>
+              <th>Nome Completo</th>
+              <th>Setor</th>
+              <th>Cargo</th>
+              <th>Pedidos de EPI / Uniforme</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody id="lista-colaboradores">
+            <!-- Renderizado via JS -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ==========================================
+       MODAIS (JANELAS POP-UP)
+       ========================================== -->
+
+  <!-- Modal: Novo Apontamento Diário -->
+  <div id="modal-novo-apontamento" class="modal-overlay">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3><i class="fa-solid fa-clipboard-list"></i> Novo Apontamento Diário</h3>
+        <button class="btn-close-modal" onclick="closeModal('modal-novo-apontamento')">&times;</button>
+      </div>
+      <form onsubmit="salvarApontamentoDiario(event)">
+        <div class="modal-body form-grid">
+          <div class="form-group">
+            <label>Equipamento / TAG</label>
+            <select id="diaria-tag" required></select>
+          </div>
+          <div class="form-group">
+            <label>Operador</label>
+            <input type="text" id="diaria-operador" placeholder="Nome do operador" required>
+          </div>
+          <div class="form-group">
+            <label>Horímetro / KM Inicial</label>
+            <input type="number" step="0.1" id="diaria-horim-ini" required>
+          </div>
+          <div class="form-group">
+            <label>Horímetro / KM Final</label>
+            <input type="number" step="0.1" id="diaria-horim-fim" required>
+          </div>
+          <div class="form-group full-width">
+            <label>Observações / Atividade Realizada</label>
+            <textarea id="diaria-obs" rows="3" placeholder="Detalhes da operação no dia..."></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn-filter" onclick="closeModal('modal-novo-apontamento')">Cancelar</button>
+          <button type="submit" class="btn-primary">Salvar Registro</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Entrada em Manutenção -->
+  <div id="modal-manutencao-codigo" class="modal-overlay">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3><i class="fa-solid fa-screwdriver-wrench"></i> Código de Manutenção - TAG: <span id="manut-modal-tag-title"></span></h3>
+        <button class="btn-close-modal" onclick="closeModal('modal-manutencao-codigo')">&times;</button>
+      </div>
+      <form onsubmit="salvarManutencaoCodigo(event)">
+        <input type="hidden" id="manut-modal-index">
+        <div class="modal-body form-grid">
+          <div class="form-group full-width">
+            <label>Lista de Problemas / Defeitos Constatados</label>
+            <textarea id="manut-modal-problemas" rows="4" placeholder="Descreva os defeitos relatados..." required></textarea>
+          </div>
+          <div class="form-group">
+            <label>Horímetro / Horas Parado</label>
+            <input type="number" step="0.1" id="manut-modal-horas-parado" value="0.0" required>
+          </div>
+          <div class="form-group">
+            <label>Localização do Equipamento</label>
+            <select id="manut-modal-local">
+              <option value="MINA">⛏️ Na Mina</option>
+              <option value="CIDADE">🏙️ Na Cidade / Oficina</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Status do Equipamento</label>
+            <select id="manut-modal-status">
+              <option value="MANUTENÇÃO">🔴 Em Manutenção</option>
+              <option value="ATIVO">🟢 Ativo / Liberado</option>
+            </select>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn-filter" onclick="closeModal('modal-manutencao-codigo')">Cancelar</button>
+          <button type="button" class="btn-secondary" onclick="gerarOSFromModal()">📄 Gerar O.S. Agora</button>
+          <button type="submit" class="btn-primary">Salvar Alterações</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Adicionar Colaborador -->
+  <div id="modal-add-colaborador" class="modal-overlay">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3><i class="fa-solid fa-user-plus"></i> Adicionar Novo Colaborador</h3>
+        <button class="btn-close-modal" onclick="closeModal('modal-add-colaborador')">&times;</button>
+      </div>
+      <form onsubmit="salvarNovoColaborador(event)">
+        <div class="modal-body form-grid">
+          <div class="form-group">
+            <label>Matrícula</label>
+            <input type="text" id="colab-matricula" placeholder="Ex: GF-1020" required>
+          </div>
+          <div class="form-group">
+            <label>Nome Completo</label>
+            <input type="text" id="colab-nome" placeholder="Nome do colaborador" required>
+          </div>
+          <div class="form-group">
+            <label>Setor</label>
+            <select id="colab-setor" required>
+              <option value="Nucleação">Nucleação</option>
+              <option value="Manutenção">Manutenção</option>
+              <option value="Supressão">Supressão</option>
+              <option value="Romaneio">Romaneio</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Cargo / Função</label>
+            <input type="text" id="colab-cargo" placeholder="Ex: Operador / Mecânico" required>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn-filter" onclick="closeModal('modal-add-colaborador')">Cancelar</button>
+          <button type="submit" class="btn-primary">Cadastrar Colaborador</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Pedido de EPI / Uniforme -->
+  <div id="modal-novo-pedido-epi" class="modal-overlay">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3><i class="fa-solid fa-shirt"></i> Solicitar EPI / Uniforme</h3>
+        <button class="btn-close-modal" onclick="closeModal('modal-novo-pedido-epi')">&times;</button>
+      </div>
+      <form onsubmit="salvarPedidoEPI(event)">
+        <div class="modal-body form-grid">
+          <div class="form-group full-width">
+            <label>Selecione o Colaborador</label>
+            <select id="pedido-colaborador-id" required></select>
+          </div>
+          <div class="form-group">
+            <label>Tipo de Item</label>
+            <select id="pedido-tipo-item" required>
+              <option value="EPI">EPI (Botina, Capacete, Luva, Óculos)</option>
+              <option value="UNIFORME">Uniforme (Camisa, Calça, Japona)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Descrição dos Itens e Tamanhos</label>
+            <input type="text" id="pedido-descricao" placeholder="Ex: 1 Botina Nº 41, 2 Camisas Tam M" required>
+          </div>
+          <div class="form-group full-width">
+            <label>Motivo da Solicitação / Observações</label>
+            <textarea id="pedido-motivo" rows="2" placeholder="Ex: Substituição por desgaste natural..."></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn-filter" onclick="closeModal('modal-novo-pedido-epi')">Cancelar</button>
+          <button type="submit" class="btn-primary">Registrar Pedido</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Visualizar e Imprimir O.S. ou Relatório de Pedidos -->
+  <div id="modal-impressao" class="modal-overlay">
+    <div class="modal-card print-modal-content" style="max-width: 800px;">
+      <div class="modal-header no-print">
+        <h3 id="print-modal-title"><i class="fa-solid fa-print"></i> Documento Oficial</h3>
+        <button class="btn-close-modal" onclick="closeModal('modal-impressao')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div id="area-impressao-conteudo" class="print-sheet">
+          <!-- Conteúdo dinâmico da O.S. ou Relatório -->
+        </div>
+      </div>
+      <div class="modal-footer no-print">
+        <button class="btn-filter" onclick="closeModal('modal-impressao')">Fechar</button>
+        <button class="btn-primary" onclick="window.print()"><i class="fa-solid fa-print"></i> Imprimir / PDF</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Lógica e Comportamento Javascript -->
+  <script src="script.js"></script>
 </body>
 </html>
