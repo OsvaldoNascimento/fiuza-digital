@@ -1,5 +1,5 @@
 /* ==========================================
-   ESTILOS FIUZA DIGITAL - CORRIGIDO
+   ESTILOS FIUZA DIGITAL - CORRIGIDO E AJUSTADO
    ========================================== */
 :root {
     --fiuza-navy: #003366;
@@ -386,6 +386,35 @@ input, select, textarea {
     color: white;
 }
 
+/* CONTÊINER DE AÇÕES NA TABELA PARA IGUALAR BOTÕES */
+.actions-cell {
+    display: flex;
+    gap: 6px;
+    width: 100%;
+    min-width: 160px;
+}
+
+.btn-table {
+    flex: 1; /* Faz com que ambos os botões dividam o espaço igualmente */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    padding: 8px 6px;
+    border: none;
+    border-radius: 6px;
+    color: white;
+    font-weight: bold;
+    font-size: 12px;
+    cursor: pointer;
+    text-align: center;
+    white-space: nowrap;
+}
+
+.btn-table-edit { background: var(--fiuza-navy); }
+.btn-table-os { background: var(--fiuza-orange); }
+.btn-table-del { background: #dc3545; }
+
 .badge {
     padding: 4px 8px;
     border-radius: 4px;
@@ -395,21 +424,6 @@ input, select, textarea {
 
 .badge-ativo { background: #d4edda; color: #155724; }
 .badge-manut { background: #f8d7da; color: #721c24; }
-
-.btn-table {
-    padding: 5px 10px;
-    border: none;
-    border-radius: 4px;
-    color: white;
-    font-weight: bold;
-    font-size: 11px;
-    cursor: pointer;
-    margin-right: 4px;
-}
-
-.btn-table-edit { background: var(--fiuza-navy); }
-.btn-table-os { background: var(--fiuza-orange); }
-.btn-table-del { background: #dc3545; }
 
 /* MODAIS */
 .modal-backdrop {
