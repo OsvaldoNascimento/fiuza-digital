@@ -1,11 +1,11 @@
 /* ==========================================
-   ESTILOS FIUZA DIGITAL - TELA PRINCIPAL
+   ESTILOS FIUZA DIGITAL - CORRIGIDO
    ========================================== */
 :root {
     --fiuza-navy: #003366;
     --fiuza-navy-dark: #001f3f;
     --fiuza-orange: #FF6600;
-    --bg-gray: #f4f6f8;
+    --bg-gray: #f0f2f5;
     --border-color: #dcdcdc;
 }
 
@@ -16,13 +16,14 @@
     font-family: Arial, Helvetica, sans-serif;
 }
 
+/* FUNDO COM LOGO D'ÁGUA SUAVE E CONTIDA NO TAMANHO CERTO */
 body {
     background-color: var(--bg-gray);
-    background-image: linear-gradient(rgba(244, 246, 248, 0.95), rgba(244, 246, 248, 0.95)), url('logo_oficial.png');
+    background-image: linear-gradient(rgba(240, 242, 245, 0.93), rgba(240, 242, 245, 0.93)), url('logo_oficial.png');
     background-repeat: no-repeat;
-    background-position: center center;
+    background-position: center 80px;
     background-attachment: fixed;
-    background-size: 450px auto;
+    background-size: 320px auto; /* Tamanho controlado para não estourar na tela */
     color: #333;
     min-height: 100vh;
 }
@@ -37,32 +38,27 @@ body {
     display: block;
 }
 
-/* CONTAINER PRINCIPAL */
+/* CONTAINERS */
 .container {
-    max-width: 680px;
-    margin: 0 auto;
-    background: rgba(255, 255, 255, 0.97);
-    backdrop-filter: blur(5px);
+    max-width: 650px;
+    margin: 0 auto 30px auto;
+    background: #ffffff;
     padding: 22px;
     border-radius: 12px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-    border: 1px solid var(--border-color);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    border: 1px solid #e2e8f0;
 }
 
 .container-full {
     max-width: 1000px;
 }
 
-.home-container {
-    padding-top: 15px;
-}
-
 /* BOTÃO VOLTAR AO MENU */
 .btn-back {
     background: var(--fiuza-navy);
-    color: white;
+    color: #ffffff;
     border: none;
-    padding: 10px 16px;
+    padding: 10px 18px;
     border-radius: 6px;
     font-weight: bold;
     font-size: 13px;
@@ -94,24 +90,25 @@ body {
 /* CARTÃO BOAS-VINDAS + LOGO NA HOME */
 .welcome-card-main {
     background: linear-gradient(135deg, var(--fiuza-navy) 0%, var(--fiuza-navy-dark) 100%);
-    color: white;
-    padding: 20px;
+    color: #ffffff;
+    padding: 18px;
     border-radius: 10px;
-    margin-bottom: 25px;
+    margin-bottom: 20px;
     border-left: 5px solid var(--fiuza-orange);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.12);
 }
 
 .welcome-header {
     display: flex;
     align-items: center;
     gap: 12px;
-    margin-bottom: 15px;
+    margin-bottom: 12px;
 }
 
 .welcome-header h2 {
-    font-size: 17px;
+    font-size: 18px;
     font-weight: bold;
+    color: #ffffff;
 }
 
 .welcome-header p {
@@ -127,50 +124,61 @@ body {
 
 .logo-center {
     text-align: center;
-    background: white;
-    padding: 12px;
+    background: #ffffff;
+    padding: 10px;
     border-radius: 8px;
 }
 
 .logo-fiuza-main {
-    max-height: 55px;
+    max-height: 50px;
     width: auto;
+    display: block;
+    margin: 0 auto;
 }
 
-/* 3 CARDS DO MENU PRINCIPAL */
+/* 3 CARDS DO MENU PRINCIPAL (NOVO DESIGN MODERNO) */
 .menu-cards-grid {
     display: flex;
     flex-direction: column;
-    gap: 15px;
+    gap: 14px;
 }
 
 .menu-card {
     display: flex;
     align-items: center;
     gap: 16px;
-    padding: 18px 20px;
+    padding: 16px 20px;
     border-radius: 10px;
     border: none;
     cursor: pointer;
     text-align: left;
-    color: white;
+    color: #ffffff !important;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
     width: 100%;
 }
 
 .menu-card:hover {
     transform: translateY(-2px);
-    box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+    box-shadow: 0 6px 15px rgba(0,0,0,0.18);
 }
 
-.card-blue { background: linear-gradient(135deg, #004080 0%, #002b55 100%); }
-.card-orange { background: linear-gradient(135deg, #FF6600 0%, #cc5200 100%); }
-.card-navy { background: linear-gradient(135deg, #002244 0%, #001122 100%); }
+.card-blue {
+    background: linear-gradient(135deg, #004080 0%, #002b55 100%);
+}
+
+.card-orange {
+    background: linear-gradient(135deg, #FF6600 0%, #cc5200 100%);
+}
+
+.card-navy {
+    background: linear-gradient(135deg, #002244 0%, #001122 100%);
+}
 
 .card-icon {
-    font-size: 28px;
-    width: 45px;
+    font-size: 26px;
+    width: 40px;
     text-align: center;
+    color: #ffffff;
 }
 
 .card-text {
@@ -181,17 +189,19 @@ body {
     font-size: 16px;
     font-weight: bold;
     margin-bottom: 3px;
+    color: #ffffff;
 }
 
 .card-text p {
-    font-size: 11px;
-    opacity: 0.85;
+    font-size: 12px;
+    color: #e2e8f0;
     line-height: 1.3;
 }
 
 .card-arrow {
-    font-size: 18px;
-    opacity: 0.7;
+    font-size: 16px;
+    color: #ffffff;
+    opacity: 0.8;
 }
 
 /* FORMULÁRIO E ELEMENTOS */
@@ -228,6 +238,7 @@ input, select, textarea {
     border: 1px solid var(--border-color);
     border-radius: 6px;
     font-size: 14px;
+    width: 100%;
 }
 
 .input-with-actions {
@@ -240,11 +251,12 @@ input, select, textarea {
 }
 
 .btn-mini {
-    padding: 0 12px;
+    padding: 0 14px;
     border: none;
     color: white;
     font-weight: bold;
-    border-radius: 4px;
+    font-size: 16px;
+    border-radius: 6px;
     cursor: pointer;
 }
 
@@ -258,13 +270,14 @@ input, select, textarea {
 
 .toggle-btn {
     flex: 1;
-    padding: 8px;
+    padding: 10px;
     border: 1px solid var(--border-color);
     background: #e9ecef;
     cursor: pointer;
     font-weight: bold;
-    font-size: 12px;
-    border-radius: 4px;
+    font-size: 13px;
+    border-radius: 6px;
+    color: #333;
 }
 
 .toggle-btn.active {
@@ -284,7 +297,7 @@ input, select, textarea {
 .pill, .pill-sector {
     background: #e9ecef;
     border: 1px solid var(--border-color);
-    padding: 6px 12px;
+    padding: 8px 14px;
     border-radius: 20px;
     font-size: 12px;
     font-weight: bold;
@@ -300,7 +313,7 @@ input, select, textarea {
 .btn-container {
     display: flex;
     gap: 10px;
-    margin-top: 15px;
+    margin-top: 20px;
 }
 
 .btn-acao {
