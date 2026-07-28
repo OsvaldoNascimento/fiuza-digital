@@ -16,14 +16,14 @@
     font-family: Arial, Helvetica, sans-serif;
 }
 
-/* FUNDO COM LOGO D'ÁGUA SUAVE E CONTIDA NO TAMANHO CERTO */
+/* FUNDO COM LOGO D'ÁGUA SUAVE E CONTIDA */
 body {
     background-color: var(--bg-gray);
     background-image: linear-gradient(rgba(240, 242, 245, 0.93), rgba(240, 242, 245, 0.93)), url('logo_oficial.png');
     background-repeat: no-repeat;
     background-position: center 80px;
     background-attachment: fixed;
-    background-size: 320px auto; /* Tamanho controlado para não estourar na tela */
+    background-size: 320px auto;
     color: #333;
     min-height: 100vh;
 }
@@ -136,7 +136,7 @@ body {
     margin: 0 auto;
 }
 
-/* 3 CARDS DO MENU PRINCIPAL (NOVO DESIGN MODERNO) */
+/* 3 CARDS DO MENU PRINCIPAL */
 .menu-cards-grid {
     display: flex;
     flex-direction: column;
@@ -162,17 +162,9 @@ body {
     box-shadow: 0 6px 15px rgba(0,0,0,0.18);
 }
 
-.card-blue {
-    background: linear-gradient(135deg, #004080 0%, #002b55 100%);
-}
-
-.card-orange {
-    background: linear-gradient(135deg, #FF6600 0%, #cc5200 100%);
-}
-
-.card-navy {
-    background: linear-gradient(135deg, #002244 0%, #001122 100%);
-}
+.card-blue { background: linear-gradient(135deg, #004080 0%, #002b55 100%); }
+.card-orange { background: linear-gradient(135deg, #FF6600 0%, #cc5200 100%); }
+.card-navy { background: linear-gradient(135deg, #002244 0%, #001122 100%); }
 
 .card-icon {
     font-size: 26px;
@@ -209,9 +201,40 @@ body {
     margin-bottom: 20px;
 }
 
+.section-header {
+    margin-bottom: 15px;
+}
+
+.section-header-action {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
 .header-logo h2, .section-header h2 {
     color: var(--fiuza-navy);
     font-size: 18px;
+}
+
+.btn-add-colab {
+    background: #28a745;
+    color: white;
+    border: none;
+    padding: 9px 15px;
+    border-radius: 6px;
+    font-weight: bold;
+    font-size: 13px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: background 0.2s;
+}
+
+.btn-add-colab:hover {
+    background: #218838;
 }
 
 .row {
@@ -325,10 +348,21 @@ input, select, textarea {
     font-weight: bold;
     border-radius: 6px;
     cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    transition: opacity 0.2s;
 }
 
-.btn-salvar { background: #28a745; }
-.btn-pdf { background: var(--fiuza-orange); }
+.btn-acao:hover {
+    opacity: 0.9;
+}
+
+.btn-salvar { 
+    background: #28a745; 
+}
+
+.btn-pdf { 
+    background: var(--fiuza-orange); 
+}
 
 .table-card {
     overflow-x: auto;
