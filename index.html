@@ -226,8 +226,11 @@
                 <i class="fa-solid fa-arrow-left"></i> Voltar ao Menu Principal
             </button>
 
-            <div class="section-header">
+            <div class="section-header section-header-action">
                 <h2><i class="fa-solid fa-address-book"></i> Gestão de Colaboradores</h2>
+                <button class="btn-add-colab" onclick="adicionarColaboradorDireto()">
+                    <i class="fa-solid fa-user-plus"></i> Adicionar Colaborador
+                </button>
             </div>
 
             <div class="sector-filters">
@@ -294,7 +297,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn-acao btn-pdf" onclick="gerarOSDaModal()">📄 Gerar O.S.</button>
-                <button type="submit" class="btn-action btn-salvar">Salvar Alterações</button>
+                <button type="submit" class="btn-acao btn-salvar">Salvar</button>
             </div>
         </form>
     </div>
@@ -731,6 +734,43 @@
             }
             renderizarProfissionais();
             renderizarListaColaboradores();
+        }
+    }
+
+    /* ADICIONAR COLABORADOR DIRETO NA TELA DE COLABORADORES */
+    function adicionarColaboradorDireto() {
+        const opcao = prompt("Qual a função do novo colaborador?\n1 - Encarregado\n2 - Operador\n3 - Motorista");
+        if (!opcao) return;
+
+        let tipo = '';
+        if (opcao === '1') tipo = 'Encarregado';
+        else if (opcao === '2') tipo = 'Operador';
+        else if (opcao === '3') tipo = 'Motorista';
+        else return alert('Opção inválida!');
+
+        const novoNome = prompt(`Digite o nome do novo ${tipo}:`);
+        if (novoNome && novoNome.trim() !== '') {
+            const valor = novoNome.trim().toUpperCase();
+
+            if (tipo === 'Encarregado') {
+                listaEncarregados.push(valor);
+                listaEncarregados.sort();
+                localStorage.setItem('fiuza_encarregados_v2', JSON.stringify(listaEncarregados));
+                renderizarEncarregados();
+            } else if (tipo === 'Operador') {
+                listaOperadores.push(valor);
+                listaOperadores.sort();
+                localStorage.setItem('fiuza_operadores', JSON.stringify(listaOperadores));
+                renderizarProfissionais();
+            } else if (tipo === 'Motorista') {
+                listaMotoristas.push(valor);
+                listaMotoristas.sort();
+                localStorage.setItem('fiuza_motoristas', JSON.stringify(listaMotoristas));
+                renderizarProfissionais();
+            }
+
+            renderizarListaColaboradores();
+            alert(`✓ ${tipo} ${valor} adicionado com sucesso!`);
         }
     }
 
