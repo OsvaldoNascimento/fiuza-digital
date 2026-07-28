@@ -43,7 +43,7 @@
 <main class="app-body">
 
     <!-- ========================================== -->
-    <!-- ABA 1: PARTE DIÁRIA (SEU RDO ORIGINAL)    -->
+    <!-- ABA 1: PARTE DIÁRIA (RDO)                  -->
     <!-- ========================================== -->
     <section id="tab-parte-diaria" class="tab-content active">
         <div class="container">
@@ -160,14 +160,7 @@
         <div class="container">
             <div class="section-header">
                 <h2><i class="fa-solid fa-wrench"></i> Painel de Manutenção da Frota</h2>
-                <div class="filter-pills">
-                    <button class="pill active" onclick="filterCategory('TODOS')">Todos</button>
-                    <button class="pill" onclick="filterCategory('Equipamentos')">Equipamentos</button>
-                    <button class="pill" onclick="filterCategory('Caminhões')">Caminhões (CB)</button>
-                    <button class="pill" onclick="filterCategory('Pick-up')">Pick-up</button>
-                </div>
             </div>
-
             <div class="table-card">
                 <table class="custom-table">
                     <thead>
@@ -178,11 +171,10 @@
                             <th>Status</th>
                             <th>Localização</th>
                             <th>Horas Parado</th>
-                            <th>Ações</th>
                         </tr>
                     </thead>
                     <tbody id="lista-manutencao-body">
-                        <!-- Puxado via Javascript -->
+                        <!-- Dados dinâmicos -->
                     </tbody>
                 </table>
             </div>
@@ -196,37 +188,18 @@
         <div class="container">
             <div class="section-header">
                 <h2><i class="fa-solid fa-address-book"></i> Gestão de Colaboradores e EPIs</h2>
-                <div class="action-buttons">
-                    <button class="btn-action btn-blue" onclick="openModal('modal-add-colab')">
-                        <i class="fa-solid fa-user-plus"></i> Add Colaborador
-                    </button>
-                    <button class="btn-action btn-orange" onclick="openModal('modal-pedido-epi')">
-                        <i class="fa-solid fa-box-open"></i> Pedido EPI
-                    </button>
-                </div>
             </div>
-
-            <div class="sector-filters">
-                <button class="pill-sector active" onclick="filterSector('TODOS')">Todos os Setores</button>
-                <button class="pill-sector" onclick="filterSector('Nucleação')">Nucleação</button>
-                <button class="pill-sector" onclick="filterSector('Manutenção')">Manutenção</button>
-                <button class="pill-sector" onclick="filterSector('Supressão')">Supressão</button>
-                <button class="pill-sector" onclick="filterSector('Romaneio')">Romaneio</button>
-            </div>
-
             <div class="table-card">
                 <table class="custom-table">
                     <thead>
                         <tr>
-                            <th>Matrícula</th>
                             <th>Nome Completo</th>
+                            <th>Função</th>
                             <th>Setor</th>
-                            <th>Cargo</th>
-                            <th>Ações</th>
                         </tr>
                     </thead>
                     <tbody id="lista-colaboradores-body">
-                        <!-- Puxado via Javascript -->
+                        <!-- Dados dinâmicos -->
                     </tbody>
                 </table>
             </div>
@@ -234,9 +207,6 @@
     </section>
 
 </main>
-
-<!-- SCRIPTS DE FUNCIONAMENTO -->
-<script src="script.js"></script>
 
 <script>
     // Registro do Service Worker PWA
@@ -248,7 +218,6 @@
         });
     }
 
-    // Código do RDO incorporado
     const padraoEquipamentos = [
         { tipo: "TRATOR DE ESTEIRA", tags: ["SH_430", "SH_445", "SH_449", "SH_565", "SH_567", "SH_569", "SH_847", "SH_886"] },
         { tipo: "PÁ CARREGADEIRA", tags: ["SH_168", "SH_461", "SH_10299", "SH_10389", "SH_10390", "SH_10781", "SH_10782"] },
@@ -684,7 +653,7 @@
         pdfMake.createPdf(docDefinition).download(`RDO_${identificacao}_${data}.pdf`);
     }
 
-    // Função de Troca de Abas da Navegação Superior
+    // Função de Troca de Abas
     function switchTab(tabId) {
         document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
         document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
