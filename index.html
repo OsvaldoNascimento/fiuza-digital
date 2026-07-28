@@ -19,50 +19,72 @@
 </head>
 <body>
 
-<!-- NAVEGAÇÃO SUPERIOR POR ABAS -->
-<nav class="main-nav">
-    <div class="nav-wrapper">
-        <button class="tab-btn active" onclick="switchTab('parte-diaria')">
-            <i class="fa-solid fa-clipboard-list"></i>
-            <span>Parte Diária (RDO)</span>
-        </button>
-
-        <button class="tab-btn" onclick="switchTab('manutencao')">
-            <i class="fa-solid fa-screwdriver-wrench"></i>
-            <span>Manutenção & O.S.</span>
-        </button>
-
-        <button class="tab-btn" onclick="switchTab('colaboradores')">
-            <i class="fa-solid fa-users"></i>
-            <span>Colaboradores & EPIs</span>
-        </button>
-    </div>
-</nav>
-
-<!-- CONTEÚDO PRINCIPAL DAS ABAS -->
 <main class="app-body">
 
     <!-- ========================================== -->
-    <!-- ABA 1: PARTE DIÁRIA (RDO ORIGINAL)        -->
+    <!-- TELA PRINCIPAL / MENU DASHBOARD            -->
     <!-- ========================================== -->
-    <section id="tab-parte-diaria" class="tab-content active">
-        <div class="container">
+    <section id="screen-home" class="screen-content active">
+        <div class="container home-container">
             <div id="status-rede" class="status-bar online">Conectado - Sincronização Ativa</div>
 
-            <!-- CARTÃO DE BOAS-VINDAS -->
-            <div class="welcome-card">
-                <i class="fa-solid fa-user-gear"></i>
-                <div>
-                    <h3>Seja bem-vindo, Sr. Osvaldo</h3>
-                    <p>Chefe de Manutenção e Frota — Grupo Fiuza Digital</p>
+            <!-- CARTÃO DE BOAS-VINDAS E LOGO -->
+            <div class="welcome-card-main">
+                <div class="welcome-header">
+                    <i class="fa-solid fa-user-gear user-icon"></i>
+                    <div>
+                        <h2>Seja bem-vindo, Sr. Osvaldo</h2>
+                        <p>Chefe de Manutenção e Frota — Grupo Fiuza Digital</p>
+                    </div>
+                </div>
+                <div class="logo-center">
+                    <img src="logo_oficial.png" alt="Grupo Fiuza" class="logo-fiuza-main">
                 </div>
             </div>
 
+            <!-- 3 BOTÕES DE MÓDULOS / CHAMADA PRINCIPAL -->
+            <div class="menu-cards-grid">
+                <button class="menu-card card-blue" onclick="navigateTo('parte-diaria')">
+                    <div class="card-icon"><i class="fa-solid fa-clipboard-list"></i></div>
+                    <div class="card-text">
+                        <h3>Parte Diária</h3>
+                        <p>Lançamento de horímetros, frentes de serviço e apontamentos</p>
+                    </div>
+                    <i class="fa-solid fa-chevron-right card-arrow"></i>
+                </button>
+
+                <button class="menu-card card-orange" onclick="navigateTo('manutencao')">
+                    <div class="card-icon"><i class="fa-solid fa-screwdriver-wrench"></i></div>
+                    <div class="card-text">
+                        <h3>Manutenção & O.S.</h3>
+                        <p>Gestão de frota, preventivas, horas parado e emissão de O.S.</p>
+                    </div>
+                    <i class="fa-solid fa-chevron-right card-arrow"></i>
+                </button>
+
+                <button class="menu-card card-navy" onclick="navigateTo('colaboradores')">
+                    <div class="card-icon"><i class="fa-solid fa-users"></i></div>
+                    <div class="card-text">
+                        <h3>Colaboradores</h3>
+                        <p>Lista de operadores, motoristas e encarregados</p>
+                    </div>
+                    <i class="fa-solid fa-chevron-right card-arrow"></i>
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- TELA 1: PARTE DIÁRIA                       -->
+    <!-- ========================================== -->
+    <section id="screen-parte-diaria" class="screen-content">
+        <div class="container">
+            <button class="btn-back" onclick="navigateTo('home')">
+                <i class="fa-solid fa-arrow-left"></i> Voltar ao Menu Principal
+            </button>
+
             <div class="header-logo">
-                <div class="logo-wrapper">
-                    <img src="logo_oficial.png" alt="Grupo Fiuza" class="logo-fiuza-img">
-                </div>
-                <h2>Fiuza Digital - Relatório Diário</h2>
+                <h2><i class="fa-solid fa-clipboard-list"></i> Parte Diária - Relatório de Operação</h2>
             </div>
 
             <form id="rdo-form">
@@ -152,15 +174,19 @@
     </section>
 
     <!-- ========================================== -->
-    <!-- ABA 2: MANUTENÇÃO & ORDENS DE SERVIÇO (O.S)-->
+    <!-- TELA 2: MANUTENÇÃO & ORDENS DE SERVIÇO     -->
     <!-- ========================================== -->
-    <section id="tab-manutencao" class="tab-content">
+    <section id="screen-manutencao" class="screen-content">
         <div class="container container-full">
+            <button class="btn-back" onclick="navigateTo('home')">
+                <i class="fa-solid fa-arrow-left"></i> Voltar ao Menu Principal
+            </button>
+
             <div class="section-header">
                 <h2><i class="fa-solid fa-wrench"></i> Painel de Gestão de Manutenção</h2>
             </div>
 
-            <!-- Filtros por Categoria Nativas -->
+            <!-- Filtros por Categoria -->
             <div class="filter-pills">
                 <button class="pill active" onclick="filtrarManutencao('TODOS')">Todos</button>
                 <button class="pill" onclick="filtrarManutencao('equipamento')">Equipamentos</button>
@@ -184,7 +210,7 @@
                         </tr>
                     </thead>
                     <tbody id="lista-manutencao-body">
-                        <!-- Puxado Dinamicamente do RDO -->
+                        <!-- Puxado da Parte Diária -->
                     </tbody>
                 </table>
             </div>
@@ -192,10 +218,14 @@
     </section>
 
     <!-- ========================================== -->
-    <!-- ABA 3: COLABORADORES                       -->
+    <!-- TELA 3: COLABORADORES                      -->
     <!-- ========================================== -->
-    <section id="tab-colaboradores" class="tab-content">
+    <section id="screen-colaboradores" class="screen-content">
         <div class="container container-full">
+            <button class="btn-back" onclick="navigateTo('home')">
+                <i class="fa-solid fa-arrow-left"></i> Voltar ao Menu Principal
+            </button>
+
             <div class="section-header">
                 <h2><i class="fa-solid fa-address-book"></i> Gestão de Colaboradores</h2>
             </div>
@@ -217,7 +247,7 @@
                         </tr>
                     </thead>
                     <tbody id="lista-colaboradores-body">
-                        <!-- Puxado Dinamicamente do RDO -->
+                        <!-- Puxado da Parte Diária -->
                     </tbody>
                 </table>
             </div>
@@ -424,7 +454,17 @@
 
     document.getElementById('data').valueAsDate = new Date();
 
-    /* RDO FUNÇÕES */
+    /* NAVEGAÇÃO DE TELA (HOME <-> MÓDULOS) */
+    function navigateTo(screenId) {
+        document.querySelectorAll('.screen-content').forEach(s => s.classList.remove('active'));
+        const target = document.getElementById(`screen-${screenId}`);
+        if (target) {
+            target.classList.add('active');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    }
+
+    /* FUNÇÕES DA PARTE DIÁRIA */
     function renderizarEncarregados() {
         const select = document.getElementById('encarregado');
         if(!select) return;
@@ -754,7 +794,7 @@
                 {
                     columns: [
                         { text: 'GRUPO FIUZA', fontSize: 18, bold: true, color: '#003366' },
-                        { text: 'RELATÓRIO DIÁRIO DE OPERAÇÃO (RDO)', alignment: 'right', fontSize: 10, color: '#666666', margin: [0, 5, 0, 0] }
+                        { text: 'RELATÓRIO DE OPERAÇÃO DIÁRIA', alignment: 'right', fontSize: 10, color: '#666666', margin: [0, 5, 0, 0] }
                     ]
                 },
                 { canvas: [{ type: 'line', x1: 0, y1: 10, x2: 515, y2: 10, lineWidth: 3, lineColor: '#FF6600' }] },
@@ -775,7 +815,7 @@
             ]
         };
 
-        pdfMake.createPdf(docDefinition).download(`RDO_${identificacao}_${data}.pdf`);
+        pdfMake.createPdf(docDefinition).download(`ParteDiaria_${identificacao}_${data}.pdf`);
     }
 
     /* ALIMENTAÇÃO DA MANUTENÇÃO */
@@ -832,7 +872,7 @@
 
     function filtrarManutencao(cat) {
         filtroManutAtual = cat;
-        document.querySelectorAll('#tab-manutencao .pill').forEach(btn => btn.classList.remove('active'));
+        document.querySelectorAll('#screen-manutencao .pill').forEach(btn => btn.classList.remove('active'));
         if(window.event && window.event.target) window.event.target.classList.add('active');
         renderizarPainelManutencao();
     }
@@ -994,7 +1034,7 @@
 
     function filtrarColaboradores(funcao) {
         filtroColabAtual = funcao;
-        document.querySelectorAll('#tab-colaboradores .pill-sector').forEach(btn => btn.classList.remove('active'));
+        document.querySelectorAll('#screen-colaboradores .pill-sector').forEach(btn => btn.classList.remove('active'));
         if(window.event && window.event.target) window.event.target.classList.add('active');
         renderizarListaColaboradores();
     }
@@ -1028,20 +1068,6 @@
 
     function fecharModal(id) {
         document.getElementById(id).style.display = 'none';
-    }
-
-    function switchTab(tabId) {
-        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-        document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
-
-        if (window.event && window.event.currentTarget) {
-            window.event.currentTarget.classList.add('active');
-        }
-
-        const targetContent = document.getElementById(`tab-${tabId}`);
-        if (targetContent) {
-            targetContent.classList.add('active');
-        }
     }
 
     // Carregamento Inicial
