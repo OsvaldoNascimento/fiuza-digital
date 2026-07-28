@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fiuza Digital - Gestão Integrada</title>
     
-    <!-- Link para o CSS Externo -->
+    <!-- CSS Externo e FontAwesome -->
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
@@ -43,15 +43,23 @@
 <main class="app-body">
 
     <!-- ========================================== -->
-    <!-- ABA 1: PARTE DIÁRIA (RDO)                  -->
+    <!-- ABA 1: PARTE DIÁRIA (RDO ORIGINAL)        -->
     <!-- ========================================== -->
     <section id="tab-parte-diaria" class="tab-content active">
         <div class="container">
             <div id="status-rede" class="status-bar online">Conectado - Sincronização Ativa</div>
 
+            <!-- CARTÃO DE BOAS-VINDAS -->
+            <div class="welcome-card">
+                <i class="fa-solid fa-user-gear"></i>
+                <div>
+                    <h3>Seja bem-vindo, Sr. Osvaldo</h3>
+                    <p>Chefe de Manutenção e Frota — Grupo Fiuza Digital</p>
+                </div>
+            </div>
+
             <div class="header-logo">
                 <div class="logo-wrapper">
-                    <!-- Imagem PNG Local do GitHub -->
                     <img src="logo_oficial.png" alt="Grupo Fiuza" class="logo-fiuza-img">
                 </div>
                 <h2>Fiuza Digital - Relatório Diário</h2>
@@ -79,15 +87,13 @@
                 <div class="form-group">
                     <label for="encarregado">Encarregado</label>
                     <div class="input-with-actions">
-                        <select id="encarregado" required>
-                            <!-- Opções dinâmicas -->
-                        </select>
+                        <select id="encarregado" required></select>
                         <button type="button" class="btn-mini btn-add" onclick="adicionarEncarregado()" title="Adicionar Novo">+</button>
                         <button type="button" class="btn-mini btn-del" onclick="removerEncarregado()" title="Remover Selecionado">-</button>
                     </div>
                 </div>
 
-                <!-- Seleção de Frota e Subcategoria Dinâmica -->
+                <!-- Seleção de Frota -->
                 <div class="form-group">
                     <label>Frota / Categoria</label>
                     <div class="toggle-group">
@@ -96,28 +102,22 @@
                         <button type="button" id="btn-cat-pickup" class="toggle-btn" onclick="selecionarCategoriaFrota('pickup')">Pick-up</button>
                     </div>
 
-                    <!-- Seleção do Tipo de Máquina/Veículo -->
                     <div style="margin-top: 10px;">
                         <label for="select-tipo-equipamento">Tipo / Família do Equipamento</label>
-                        <select id="select-tipo-equipamento" onchange="alterarTipoEquipamento()" required>
-                            <!-- Opções dinâmicas de tipos -->
-                        </select>
+                        <select id="select-tipo-equipamento" onchange="alterarTipoEquipamento()" required></select>
                     </div>
                     
-                    <!-- Seleção da TAG Específica -->
                     <div style="margin-top: 10px;">
                         <label for="select-identificacao">Identificação (TAG)</label>
                         <div class="input-with-actions">
-                            <select id="select-identificacao" onchange="aoSelecionarTag()" required>
-                                <!-- Opções dinâmicas de TAGs -->
-                            </select>
+                            <select id="select-identificacao" onchange="aoSelecionarTag()" required></select>
                             <button type="button" class="btn-mini btn-add" onclick="adicionarIdentificacao()" title="Adicionar TAG">+</button>
                             <button type="button" class="btn-mini btn-del" onclick="removerIdentificacao()" title="Remover TAG">-</button>
                         </div>
                     </div>
                 </div>
 
-                <!-- Seleção Profissional (Operador | Motorista) -->
+                <!-- Profissional -->
                 <div class="form-group">
                     <label>Profissional</label>
                     <div class="toggle-group">
@@ -126,9 +126,7 @@
                     </div>
 
                     <div class="input-with-actions">
-                        <select id="select-profissional" required>
-                            <!-- Opções dinâmicas -->
-                        </select>
+                        <select id="select-profissional" required></select>
                         <button type="button" class="btn-mini btn-add" onclick="adicionarProfissional()" title="Adicionar Novo">+</button>
                         <button type="button" class="btn-mini btn-del" onclick="removerProfissional()" title="Remover Selecionado">-</button>
                     </div>
@@ -154,27 +152,39 @@
     </section>
 
     <!-- ========================================== -->
-    <!-- ABA 2: MANUTENÇÃO & O.S.                   -->
+    <!-- ABA 2: MANUTENÇÃO & ORDENS DE SERVIÇO (O.S)-->
     <!-- ========================================== -->
     <section id="tab-manutencao" class="tab-content">
-        <div class="container">
+        <div class="container container-full">
             <div class="section-header">
-                <h2><i class="fa-solid fa-wrench"></i> Painel de Manutenção da Frota</h2>
+                <h2><i class="fa-solid fa-wrench"></i> Painel de Gestão de Manutenção</h2>
             </div>
+
+            <!-- Filtros por Categoria Nativas -->
+            <div class="filter-pills">
+                <button class="pill active" onclick="filtrarManutencao('TODOS')">Todos</button>
+                <button class="pill" onclick="filtrarManutencao('equipamento')">Equipamentos</button>
+                <button class="pill" onclick="filtrarManutencao('cb')">Caminhões (CB)</button>
+                <button class="pill" onclick="filtrarManutencao('pickup')">Pick-ups</button>
+            </div>
+
+            <!-- Tabela de Frota e Status -->
             <div class="table-card">
                 <table class="custom-table">
                     <thead>
                         <tr>
-                            <th>TAG</th>
-                            <th>Categoria</th>
-                            <th>Horímetro/KM</th>
+                            <th>TAG / Frota</th>
+                            <th>Tipo / Família</th>
+                            <th>Horímetro Atual</th>
                             <th>Status</th>
                             <th>Localização</th>
+                            <th>Preventivas (Última / Próxima)</th>
                             <th>Horas Parado</th>
+                            <th>Ações</th>
                         </tr>
                     </thead>
                     <tbody id="lista-manutencao-body">
-                        <!-- Dados dinâmicos -->
+                        <!-- Puxado Dinamicamente do RDO -->
                     </tbody>
                 </table>
             </div>
@@ -182,24 +192,32 @@
     </section>
 
     <!-- ========================================== -->
-    <!-- ABA 3: COLABORADORES & EPIS                -->
+    <!-- ABA 3: COLABORADORES                       -->
     <!-- ========================================== -->
     <section id="tab-colaboradores" class="tab-content">
-        <div class="container">
+        <div class="container container-full">
             <div class="section-header">
-                <h2><i class="fa-solid fa-address-book"></i> Gestão de Colaboradores e EPIs</h2>
+                <h2><i class="fa-solid fa-address-book"></i> Gestão de Colaboradores</h2>
             </div>
+
+            <div class="sector-filters">
+                <button class="pill-sector active" onclick="filtrarColaboradores('TODOS')">Todos</button>
+                <button class="pill-sector" onclick="filtrarColaboradores('Encarregado')">Encarregados</button>
+                <button class="pill-sector" onclick="filtrarColaboradores('Operador')">Operadores</button>
+                <button class="pill-sector" onclick="filtrarColaboradores('Motorista')">Motoristas</button>
+            </div>
+
             <div class="table-card">
                 <table class="custom-table">
                     <thead>
                         <tr>
-                            <th>Nome Completo</th>
-                            <th>Função</th>
-                            <th>Setor</th>
+                            <th>Nome do Colaborador</th>
+                            <th>Função / Categoria</th>
+                            <th>Ações</th>
                         </tr>
                     </thead>
                     <tbody id="lista-colaboradores-body">
-                        <!-- Dados dinâmicos -->
+                        <!-- Puxado Dinamicamente do RDO -->
                     </tbody>
                 </table>
             </div>
@@ -208,8 +226,104 @@
 
 </main>
 
+<!-- MODAL CÓDIGO DE MANUTENÇÃO -->
+<div id="modal-codigo-manutencao" class="modal-backdrop">
+    <div class="modal-box">
+        <div class="modal-header">
+            <h3><i class="fa-solid fa-triangle-exclamation"></i> Apontamento de Manutenção - <span id="manut-modal-tag"></span></h3>
+            <button class="close-btn" onclick="fecharModal('modal-codigo-manutencao')">&times;</button>
+        </div>
+        <form onsubmit="salvarStatusManutencao(event)">
+            <input type="hidden" id="manut-modal-tag-id">
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Status Operacional</label>
+                    <select id="manut-modal-status">
+                        <option value="ATIVO">🟢 ATIVO (Operacional)</option>
+                        <option value="MANUTENÇÃO">🔴 EM MANUTENÇÃO (Parado)</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Localização Atual</label>
+                    <select id="manut-modal-local">
+                        <option value="MINA">⛏️ Na Mina</option>
+                        <option value="CIDADE">🏙️ Na Cidade / Oficina</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Horímetro Acumulado Parado (Horas)</label>
+                    <input type="number" step="0.1" id="manut-modal-horas-parado" value="0.0">
+                </div>
+
+                <div class="form-group">
+                    <label>Problemas / Defeitos Relatados (Código de Falha)</label>
+                    <textarea id="manut-modal-problemas" rows="4" placeholder="Descreva os problemas identificados..."></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-acao btn-pdf" onclick="gerarOSDaModal()">📄 Gerar O.S.</button>
+                <button type="submit" class="btn-action btn-salvar">Salvar Alterações</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- MODAL EDITOR DE O.S. -->
+<div id="modal-os-editor" class="modal-backdrop">
+    <div class="modal-box modal-lg">
+        <div class="modal-header">
+            <h3><i class="fa-solid fa-file-signature"></i> Emissão de Ordem de Serviço (O.S.)</h3>
+            <button class="close-btn" onclick="fecharModal('modal-os-editor')">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="row">
+                <div class="form-group">
+                    <label>TAG / Frota</label>
+                    <input type="text" id="os-tag" readonly>
+                </div>
+                <div class="form-group">
+                    <label>Data da O.S.</label>
+                    <input type="date" id="os-data">
+                </div>
+                <div class="form-group">
+                    <label>Hora</label>
+                    <input type="time" id="os-hora">
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="form-group">
+                    <label>Horímetro / KM Atual</label>
+                    <input type="number" step="0.1" id="os-horimetro">
+                </div>
+                <div class="form-group">
+                    <label>Localização</label>
+                    <select id="os-local">
+                        <option value="MINA">Mina</option>
+                        <option value="CIDADE">Cidade / Oficina</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Lista de Problemas Relatados (O.S.)</label>
+                <textarea id="os-problemas" rows="4"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label>Observações Gerais / Peças Necessárias</label>
+                <textarea id="os-observacoes" rows="3" placeholder="Digite aqui observações adicionais..."></textarea>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn-acao btn-pdf" onclick="emitirPDFOS()"><i class="fa-solid fa-file-pdf"></i> Baixar PDF da O.S.</button>
+        </div>
+    </div>
+</div>
+
 <script>
-    // Registro do Service Worker PWA
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
             navigator.serviceWorker.register('./service-worker.js')
@@ -218,6 +332,7 @@
         });
     }
 
+    /* DADOS NATIVOS DA PARTE DIÁRIA */
     const padraoEquipamentos = [
         { tipo: "TRATOR DE ESTEIRA", tags: ["SH_430", "SH_445", "SH_449", "SH_565", "SH_567", "SH_569", "SH_847", "SH_886"] },
         { tipo: "PÁ CARREGADEIRA", tags: ["SH_168", "SH_461", "SH_10299", "SH_10389", "SH_10390", "SH_10781", "SH_10782"] },
@@ -270,10 +385,15 @@
     let listaEncarregados = JSON.parse(localStorage.getItem('fiuza_encarregados_v2')) || padraoEncarregados;
     let listaOperadores = JSON.parse(localStorage.getItem('fiuza_operadores')) || padraoOperadores;
 
+    let dadosManutencao = JSON.parse(localStorage.getItem('fiuza_manutencao_status')) || {};
+
     let categoriaFrotaAtual = 'equipamento';
     let tipoProfissionalAtual = 'operador';
     let horimetroPermitidoEdicao = false;
+    let filtroManutAtual = 'TODOS';
+    let filtroColabAtual = 'TODOS';
 
+    /* FIREBASE CONFIG */
     const firebaseConfig = {
         apiKey: "AIzaSyBs9tGAhk2dRWKHsyCujHqywe08Z...",
         authDomain: "fiuza-digital.firebaseapp.com",
@@ -304,6 +424,7 @@
 
     document.getElementById('data').valueAsDate = new Date();
 
+    /* RDO FUNÇÕES */
     function renderizarEncarregados() {
         const select = document.getElementById('encarregado');
         if(!select) return;
@@ -408,6 +529,7 @@
                     if (ultimoRelatorio.horimetro_fim !== undefined) {
                         inputHini.value = ultimoRelatorio.horimetro_fim;
                         localStorage.setItem(`fiuza_ultimo_hfim_${tagSelecionada}`, ultimoRelatorio.horimetro_fim);
+                        renderizarPainelManutencao();
                         return;
                     }
                 }
@@ -446,6 +568,7 @@
             listaEncarregados.sort();
             localStorage.setItem('fiuza_encarregados_v2', JSON.stringify(listaEncarregados));
             renderizarEncarregados();
+            renderizarListaColaboradores();
             document.getElementById('encarregado').value = valor;
         }
     }
@@ -459,6 +582,7 @@
             listaEncarregados = listaEncarregados.filter(nome => nome !== selecionado);
             localStorage.setItem('fiuza_encarregados_v2', JSON.stringify(listaEncarregados));
             renderizarEncarregados();
+            renderizarListaColaboradores();
         }
     }
 
@@ -494,6 +618,7 @@
 
             selectTipo.value = idxTipo.toString();
             renderizarTagsPorTipo();
+            renderizarPainelManutencao();
             document.getElementById('select-identificacao').value = tagFormatada;
             aoSelecionarTag();
         }
@@ -520,6 +645,7 @@
             }
 
             renderizarTagsPorTipo();
+            renderizarPainelManutencao();
         }
     }
 
@@ -542,6 +668,7 @@
                 localStorage.setItem('fiuza_motoristas', JSON.stringify(listaMotoristas));
             }
             renderizarProfissionais();
+            renderizarListaColaboradores();
             document.getElementById('select-profissional').value = valor;
         }
     }
@@ -563,12 +690,9 @@
                 localStorage.setItem('fiuza_motoristas', JSON.stringify(listaMotoristas));
             }
             renderizarProfissionais();
+            renderizarListaColaboradores();
         }
     }
-
-    renderizarEncarregados();
-    renderizarTiposEquipamento();
-    renderizarProfissionais();
 
     function salvarRelatorio() {
         const frente = document.getElementById('frente').value;
@@ -598,6 +722,7 @@
         db.collection("relatorios").add(dados)
         .then(() => {
             localStorage.setItem(`fiuza_ultimo_hfim_${identificacao}`, hFimVal);
+            renderizarPainelManutencao();
             alert('✓ Relatório salvo com sucesso!');
         })
         .catch((error) => {
@@ -653,7 +778,258 @@
         pdfMake.createPdf(docDefinition).download(`RDO_${identificacao}_${data}.pdf`);
     }
 
-    // Função de Troca de Abas
+    /* ALIMENTAÇÃO DA MANUTENÇÃO */
+    function obterTodasAsTagsCompletas() {
+        let resultado = [];
+        listaEquipamentos.forEach(fam => fam.tags.forEach(t => resultado.push({ tag: t, tipo: fam.tipo, cat: 'equipamento' })));
+        listaCB.forEach(fam => fam.tags.forEach(t => resultado.push({ tag: t, tipo: fam.tipo, cat: 'cb' })));
+        listaPickup.forEach(fam => fam.tags.forEach(t => resultado.push({ tag: t, tipo: fam.tipo, cat: 'pickup' })));
+        return resultado;
+    }
+
+    function renderizarPainelManutencao() {
+        const tbody = document.getElementById('lista-manutencao-body');
+        if(!tbody) return;
+        tbody.innerHTML = '';
+
+        const todas = obterTodasAsTagsCompletas();
+
+        todas.forEach(item => {
+            if (filtroManutAtual !== 'TODOS' && item.cat !== filtroManutAtual) return;
+
+            let horimAtual = localStorage.getItem(`fiuza_ultimo_hfim_${item.tag}`) || '0.0';
+            
+            let mData = dadosManutencao[item.tag] || {
+                status: 'ATIVO',
+                local: 'MINA',
+                ultPrev: (parseFloat(horimAtual) > 250 ? parseFloat(horimAtual) - 100 : 0).toFixed(1),
+                proxPrev: (parseFloat(horimAtual) + 250).toFixed(1),
+                horasParado: 0.0,
+                problemas: ''
+            };
+
+            let tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td><strong>${item.tag}</strong></td>
+                <td>${item.tipo}</td>
+                <td><strong>${horimAtual}</strong> h/km</td>
+                <td>
+                    <span class="badge ${mData.status === 'ATIVO' ? 'badge-ativo' : 'badge-manut'}">
+                        ${mData.status === 'ATIVO' ? '🟢 ATIVO' : '🔴 EM MANUTENÇÃO'}
+                    </span>
+                </td>
+                <td>${mData.local === 'MINA' ? '⛏️ Mina' : '🏙️ Cidade'}</td>
+                <td>${mData.ultPrev} / <strong>${mData.proxPrev}</strong></td>
+                <td><strong style="color:#dc3545">${mData.horasParado} h</strong></td>
+                <td>
+                    <button class="btn-table btn-table-edit" onclick="abrirModalManutencaoTag('${item.tag}')"><i class="fa-solid fa-pen"></i> Alterar</button>
+                    <button class="btn-table btn-table-os" onclick="abrirEditorOS('${item.tag}')"><i class="fa-solid fa-file-lines"></i> O.S.</button>
+                </td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
+
+    function filtrarManutencao(cat) {
+        filtroManutAtual = cat;
+        document.querySelectorAll('#tab-manutencao .pill').forEach(btn => btn.classList.remove('active'));
+        if(window.event && window.event.target) window.event.target.classList.add('active');
+        renderizarPainelManutencao();
+    }
+
+    function abrirModalManutencaoTag(tag) {
+        let horimAtual = localStorage.getItem(`fiuza_ultimo_hfim_${tag}`) || '0.0';
+        let mData = dadosManutencao[tag] || {
+            status: 'ATIVO',
+            local: 'MINA',
+            horasParado: 0.0,
+            problemas: ''
+        };
+
+        document.getElementById('manut-modal-tag-id').value = tag;
+        document.getElementById('manut-modal-tag').innerText = tag;
+        document.getElementById('manut-modal-status').value = mData.status;
+        document.getElementById('manut-modal-local').value = mData.local;
+        document.getElementById('manut-modal-horas-parado').value = mData.horasParado;
+        document.getElementById('manut-modal-problemas').value = mData.problemas;
+
+        abrirModal('modal-codigo-manutencao');
+    }
+
+    function salvarStatusManutencao(e) {
+        e.preventDefault();
+        let tag = document.getElementById('manut-modal-tag-id').value;
+        let horimAtual = parseFloat(localStorage.getItem(`fiuza_ultimo_hfim_${tag}`) || 0);
+
+        dadosManutencao[tag] = {
+            status: document.getElementById('manut-modal-status').value,
+            local: document.getElementById('manut-modal-local').value,
+            ultPrev: (horimAtual > 250 ? horimAtual - 100 : 0).toFixed(1),
+            proxPrev: (horimAtual + 250).toFixed(1),
+            horasParado: parseFloat(document.getElementById('manut-modal-horas-parado').value) || 0.0,
+            problemas: document.getElementById('manut-modal-problemas').value
+        };
+
+        localStorage.setItem('fiuza_manutencao_status', JSON.stringify(dadosManutencao));
+        fecharModal('modal-codigo-manutencao');
+        renderizarPainelManutencao();
+    }
+
+    function gerarOSDaModal() {
+        let tag = document.getElementById('manut-modal-tag-id').value;
+        fecharModal('modal-codigo-manutencao');
+        abrirEditorOS(tag);
+    }
+
+    function abrirEditorOS(tag) {
+        let horimAtual = localStorage.getItem(`fiuza_ultimo_hfim_${tag}`) || '0.0';
+        let mData = dadosManutencao[tag] || { local: 'MINA', problemas: '' };
+        let hoje = new Date();
+
+        document.getElementById('os-tag').value = tag;
+        document.getElementById('os-data').value = hoje.toISOString().split('T')[0];
+        document.getElementById('os-hora').value = hoje.toTimeString().substring(0, 5);
+        document.getElementById('os-horimetro').value = horimAtual;
+        document.getElementById('os-local').value = mData.local;
+        document.getElementById('os-problemas').value = mData.problemas || 'Inspeção e manutenção preventiva geral.';
+        document.getElementById('os-observacoes').value = '';
+
+        abrirModal('modal-os-editor');
+    }
+
+    function emitirPDFOS() {
+        let tag = document.getElementById('os-tag').value;
+        let dataOS = document.getElementById('os-data').value.split('-').reverse().join('/');
+        let horaOS = document.getElementById('os-hora').value;
+        let horimOS = document.getElementById('os-horimetro').value;
+        let localOS = document.getElementById('os-local').value === 'MINA' ? 'Na Mina' : 'Na Cidade / Oficina';
+        let problemasOS = document.getElementById('os-problemas').value;
+        let obsOS = document.getElementById('os-observacoes').value;
+
+        const docDef = {
+            pageSize: 'A4',
+            pageMargins: [40, 40, 40, 40],
+            content: [
+                {
+                    columns: [
+                        { text: 'GRUPO FIUZA', fontSize: 18, bold: true, color: '#003366' },
+                        { text: 'ORDEM DE SERVIÇO DE MANUTENÇÃO (O.S.)', alignment: 'right', fontSize: 10, color: '#FF6600', bold: true }
+                    ]
+                },
+                { canvas: [{ type: 'line', x1: 0, y1: 8, x2: 515, y2: 8, lineWidth: 2, lineColor: '#003366' }] },
+                { text: ' ', margin: [0, 8] },
+                {
+                    table: {
+                        widths: ['33%', '33%', '34%'],
+                        body: [
+                            [
+                                { text: `TAG: ${tag}`, bold: true, fillColor: '#f2f2f2', padding: 6 },
+                                { text: `Data: ${dataOS} às ${horaOS}`, fillColor: '#f2f2f2', padding: 6 },
+                                { text: `Horímetro/KM: ${horimOS}`, fillColor: '#f2f2f2', padding: 6 }
+                            ],
+                            [
+                                { text: `Localização: ${localOS}`, colSpan: 2, padding: 6 },
+                                {},
+                                { text: `Status: EM MANUTENÇÃO`, color: '#dc3545', bold: true, padding: 6 }
+                            ]
+                        ]
+                    }
+                },
+                { text: ' ', margin: [0, 5] },
+                { text: '📋 LISTA DE PROBLEMAS / FALHAS CONSTATADAS', fontSize: 11, bold: true, color: '#003366' },
+                {
+                    table: {
+                        widths: ['100%'],
+                        body: [[{ text: problemasOS || 'Nenhum problema detalhado.', padding: 10, minHeight: 60 }]]
+                    }
+                },
+                { text: ' ', margin: [0, 5] },
+                { text: '📝 OBSERVAÇÕES E SERVIÇOS EXECUTADOS', fontSize: 11, bold: true, color: '#003366' },
+                {
+                    table: {
+                        widths: ['100%'],
+                        body: [[{ text: obsOS || '\n\n\n', padding: 10 }]]
+                    }
+                },
+                { text: ' ', margin: [0, 25] },
+                {
+                    columns: [
+                        { text: '_____________________________________\nOsvaldo Nascimento\nChefe de Manutenção', alignment: 'center', fontSize: 9 },
+                        { text: '_____________________________________\nResponsável Técnico / Mecânico', alignment: 'center', fontSize: 9 }
+                    ]
+                }
+            ]
+        };
+
+        pdfMake.createPdf(docDef).download(`OS_Manutencao_${tag}_${dataOS.replace(/\//g, '-')}.pdf`);
+        fecharModal('modal-os-editor');
+    }
+
+    /* ALIMENTAÇÃO COLABORADORES */
+    function renderizarListaColaboradores() {
+        const tbody = document.getElementById('lista-colaboradores-body');
+        if(!tbody) return;
+        tbody.innerHTML = '';
+
+        let listaTodos = [];
+        listaEncarregados.forEach(nome => listaTodos.push({ nome: nome, funcao: 'Encarregado' }));
+        listaOperadores.forEach(nome => listaTodos.push({ nome: nome, funcao: 'Operador' }));
+        listaMotoristas.forEach(nome => listaTodos.push({ nome: nome, funcao: 'Motorista' }));
+        listaMotoristasPickup.forEach(nome => listaTodos.push({ nome: nome, funcao: 'Motorista (Pick-up)' }));
+
+        listaTodos.forEach(item => {
+            if (filtroColabAtual !== 'TODOS' && !item.funcao.includes(filtroColabAtual)) return;
+
+            let tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td><strong>${item.nome}</strong></td>
+                <td>${item.funcao}</td>
+                <td>
+                    <button class="btn-table btn-table-del" onclick="removerColaboradorGeral('${item.nome}', '${item.funcao}')"><i class="fa-solid fa-trash"></i> Remover</button>
+                </td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
+
+    function filtrarColaboradores(funcao) {
+        filtroColabAtual = funcao;
+        document.querySelectorAll('#tab-colaboradores .pill-sector').forEach(btn => btn.classList.remove('active'));
+        if(window.event && window.event.target) window.event.target.classList.add('active');
+        renderizarListaColaboradores();
+    }
+
+    function removerColaboradorGeral(nome, funcao) {
+        if (!confirm(`Deseja remover "${nome}"?`)) return;
+
+        if (funcao === 'Encarregado') {
+            listaEncarregados = listaEncarregados.filter(n => n !== nome);
+            localStorage.setItem('fiuza_encarregados_v2', JSON.stringify(listaEncarregados));
+            renderizarEncarregados();
+        } else if (funcao === 'Operador') {
+            listaOperadores = listaOperadores.filter(n => n !== nome);
+            localStorage.setItem('fiuza_operadores', JSON.stringify(listaOperadores));
+            renderizarProfissionais();
+        } else {
+            listaMotoristas = listaMotoristas.filter(n => n !== nome);
+            listaMotoristasPickup = listaMotoristasPickup.filter(n => n !== nome);
+            localStorage.setItem('fiuza_motoristas', JSON.stringify(listaMotoristas));
+            localStorage.setItem('fiuza_motoristas_pickup', JSON.stringify(listaMotoristasPickup));
+            renderizarProfissionais();
+        }
+
+        renderizarListaColaboradores();
+    }
+
+    /* UTILITÁRIOS */
+    function abrirModal(id) {
+        document.getElementById(id).style.display = 'flex';
+    }
+
+    function fecharModal(id) {
+        document.getElementById(id).style.display = 'none';
+    }
+
     function switchTab(tabId) {
         document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
         document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
@@ -667,6 +1043,13 @@
             targetContent.classList.add('active');
         }
     }
+
+    // Carregamento Inicial
+    renderizarEncarregados();
+    renderizarTiposEquipamento();
+    renderizarProfissionais();
+    renderizarPainelManutencao();
+    renderizarListaColaboradores();
 </script>
 
 </body>
